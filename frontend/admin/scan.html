@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizer Scanner - GrabMyPasses</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body { background-color: #050514; color: white; font-family: sans-serif; }
+    
+    /* Navbar Styles */
+    .capsule-nav {
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Scanner Customization */
+    #reader { border: none !important; }
+    #reader video { object-fit: cover; border-radius: 16px; }
+    
+    /* Clean up the library UI */
+    #reader__dashboard_section_csr span, 
+    #reader__dashboard_section_swaplink { display: none !important; }
+    #reader__scan_region { background: transparent !important; }
+  </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden bg-[#050514]">
+
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+
+  <header class="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
+    <nav class="capsule-nav rounded-full px-6 py-3 flex items-center justify-between relative w-full max-w-5xl bg-[#0f0f1a]/80 shadow-lg">
+      
+      <a href="javascript:history.back()" class="p-2 -ml-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition-all" title="Go Back">
+        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+      </a>
+
+      <a href="dashboard.html" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl md:text-2xl font-bold text-white whitespace-nowrap inline-flex items-center gap-2">
+        <img src="/assets/only-logo.png" alt="logo" class="h-6 w-auto">
+        GrabMy<span class="text-violet-500 -mx-2">Passes</span>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-full">
+          <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+          <span class="text-[10px] font-bold tracking-widest uppercase text-red-400">Active</span>
+        </div>
+      </div>
+      
+    </nav>
+  </header>
+
+  <main class="pt-32 pb-10 flex flex-col items-center justify-center min-h-screen px-4">
+
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold mb-2">Ticket <span class="text-violet-500">Check-in</span></h1>
+      <p class="text-gray-400 text-sm">Point camera at QR Code</p>
+    </div>
+
+    <div id="https-warning" class="hidden w-full max-w-md bg-red-500/10 border border-red-500/50 text-red-200 p-4 rounded-xl text-sm mb-4 text-center">
+      ⚠️ Camera requires <b>HTTPS</b> or <b>localhost</b>.
+    </div>
+
+    <div class="w-full max-w-md bg-[#0f0f1a]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl relative min-h-[400px]">
+      
+      <div id="reader" class="w-full bg-black/50 rounded-2xl overflow-hidden"></div>
+
+      <div id="result-overlay" class="absolute inset-0 z-20 bg-[#0f0f1a] rounded-3xl p-6 flex flex-col items-center justify-center hidden">
+        
+        <div id="status-icon" class="w-20 h-20 rounded-full flex items-center justify-center mb-4"></div>
+        
+        <h2 id="status-title" class="text-2xl font-bold mb-2"></h2>
+        <p id="status-msg" class="text-gray-400 mb-6 text-center"></p>
+        
+        <div class="w-full bg-white/5 border border-white/10 rounded-xl p-4 mb-6">
+           <div class="flex justify-between mb-2 border-b border-white/5 pb-2">
+             <span class="text-xs text-gray-500 uppercase">Event</span>
+             <span id="event-name" class="text-sm font-bold text-white">--</span>
+           </div>
+           <div class="flex justify-between">
+             <span class="text-xs text-gray-500 uppercase">Attendee</span>
+             <span id="user-name" class="text-sm font-bold text-white">--</span>
+           </div>
+        </div>
+
+        <button onclick="resetScanner()" class="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition active:scale-95 shadow-lg">
+          Scan Next Ticket
+        </button>
+      </div>
+
+      <div id="manual-section" class="mt-6 pt-6 border-t border-white/10">
+        <div class="relative">
+          <input type="text" id="manual-code" placeholder="Enter Booking ID manually" 
+            class="w-full bg-[#050514] border border-white/10 rounded-xl px-4 py-3 pl-10 text-white focus:border-violet-500 outline-none transition uppercase font-mono">
+          <i data-lucide="keyboard" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+          <button onclick="handleManual()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 p-1.5 rounded-lg text-white hover:bg-violet-500">
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // GLOBAL VARIABLES
+    let html5QrcodeScanner = null;
+    let isProcessing = false; // "Soft Pause" flag
+    
+    // Audio
+    const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
+    const soundError = new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3');
+
+    // --- INITIALIZATION ---
+    document.addEventListener("DOMContentLoaded", () => {
+        lucide.createIcons();
+        checkSecureContext();
+        initScanner();
+    });
+
+    function checkSecureContext() {
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.startsWith('127.0.0.')) {
+            document.getElementById('https-warning').classList.remove('hidden');
+        }
+    }
+
+    function initScanner() {
+        const config = { 
+            fps: 10, 
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0
+        };
+
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    }
+
+    // --- CORE LOGIC: SOFT PAUSE ---
+    function onScanSuccess(decodedText, decodedResult) {
+        if (isProcessing) return;
+        isProcessing = true;
+        verifyTicket(decodedText);
+    }
+
+    function onScanFailure(error) {
+        // Silent failure
+    }
+
+    function handleManual() {
+        const val = document.getElementById("manual-code").value.trim();
+        if (val && !isProcessing) {
+            isProcessing = true;
+            verifyTicket(val);
+        }
+    }
+
+    // --- API VERIFICATION ---
+    async function verifyTicket(bookingId) {
+        const organizer = JSON.parse(localStorage.getItem("organizer"));
+        
+        if (!organizer || !organizer._id) {
+            showResult('error', 'Auth Error', 'Please login as an organizer first.', {});
+            setTimeout(() => window.location.href = "login.html", 2000);
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:5000/api/bookings/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    bookingId: bookingId,
+                    organizerId: organizer._id 
+                })
+            });
+            
+            const data = await res.json();
+
+            if (data.success) {
+                soundSuccess.play();
+                showResult('success', 'Access Granted', 'Ticket Verified Successfully', data.booking);
+            } else if (res.status === 403) { 
+                soundError.play();
+                showResult('error', 'Access Denied', 'You are not the organizer of this event.', {});
+            } else if (data.message && data.message.includes("Used")) {
+                soundError.play();
+                showResult('warning', 'Already Scanned', 'This ticket has already been used.', data.details || {});
+            } else {
+                soundError.play();
+                showResult('error', 'Invalid Ticket', data.message || 'Ticket ID not found.', {});
+            }
+
+        } catch (err) {
+            console.error(err);
+            soundError.play();
+            showResult('error', 'Connection Error', 'Could not reach server.', {});
+        }
+    }
+
+    // --- UI HELPERS ---
+    function showResult(type, title, msg, details) {
+        const overlay = document.getElementById("result-overlay");
+        const iconDiv = document.getElementById("status-icon");
+        const titleEl = document.getElementById("status-title");
+        const msgEl = document.getElementById("status-msg");
+        const eventEl = document.getElementById("event-name");
+        const userEl = document.getElementById("user-name");
+
+        titleEl.innerText = title;
+        msgEl.innerText = msg;
+        eventEl.innerText = details.event || details.scannedAt || "N/A";
+        userEl.innerText = details.user || "Unknown";
+
+        if (type === 'success') {
+            iconDiv.className = "w-20 h-20 rounded-full flex items-center justify-center mb-4 bg-emerald-500/20 text-emerald-500 animate-bounce";
+            iconDiv.innerHTML = `<i data-lucide="check" class="w-10 h-10"></i>`;
+            titleEl.className = "text-2xl font-bold mb-2 text-emerald-500";
+        } else if (type === 'warning') {
+            iconDiv.className = "w-20 h-20 rounded-full flex items-center justify-center mb-4 bg-yellow-500/20 text-yellow-500";
+            iconDiv.innerHTML = `<i data-lucide="alert-triangle" class="w-10 h-10"></i>`;
+            titleEl.className = "text-2xl font-bold mb-2 text-yellow-500";
+        } else {
+            iconDiv.className = "w-20 h-20 rounded-full flex items-center justify-center mb-4 bg-red-500/20 text-red-500";
+            iconDiv.innerHTML = `<i data-lucide="x" class="w-10 h-10"></i>`;
+            titleEl.className = "text-2xl font-bold mb-2 text-red-500";
+        }
+
+        lucide.createIcons();
+        overlay.classList.remove("hidden");
+    }
+
+    function resetScanner() {
+        document.getElementById("result-overlay").classList.add("hidden");
+        document.getElementById("manual-code").value = "";
+        isProcessing = false;
+    }
+  </script>
+</body>
+</html>

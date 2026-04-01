@@ -1,0 +1,176 @@
+/* Basic universal styles */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #8a79e2;
+  --muted: #ada5b4;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(#181624, #000);
+  color: white;
+}
+
+/* Background circle / orbit */
+.blob {
+  position: fixed;
+  width: 80vw;
+  max-width: 540px;
+  opacity: 0.25;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit {
+  position: fixed;
+  width: 90vw;
+  max-width: 680px;
+  height: 90vw;
+  max-height: 680px;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 50s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.orbit::before,
+.orbit::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background: #a0cac7;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.orbit::before {
+  top: 50%;
+  left: -10px;
+}
+
+.orbit::after {
+  top: 50%;
+  right: -10px;
+}
+
+/* Login card */
+.login {
+  width: 330px;
+  padding: 60px 30px 40px;
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(20px);
+  border-radius: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.login img {
+  width: 150px;
+  margin-top: -65px ;
+  margin-bottom: -10;
+}
+
+.login h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.login h3 {
+  font-size: 13px;
+  margin: 6px 0 35px;
+  color: var(--muted);
+}
+
+/* Inputs */
+.form {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.textbox {
+  position: relative;
+}
+
+.textbox input {
+  width: 100%;
+  height: 48px;
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+/* Floating label */
+.textbox label {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.textbox input:focus,
+.textbox input:not(:placeholder-shown) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Move label up when active */
+.textbox input:focus + label,
+.textbox input:not(:placeholder-shown) + label {
+  font-size: 11px;
+  top: -6px;
+  color: var(--primary);
+}
+
+/* Button */
+button {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.login a {
+  font-size: 14px;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.footer {
+  margin-top: 35px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.footer a {
+  color: var(--primary);
+}

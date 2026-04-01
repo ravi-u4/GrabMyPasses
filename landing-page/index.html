@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrabMyPasses - Landing Page</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Capsule Nav Style */
+    .capsule-nav {
+      background: rgba(15, 15, 26, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+
+<div id="scroll-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 z-[100] w-0 transition-all duration-100 ease-out"></div>
+
+<body class="overflow-x-hidden bg-slate-950">
+  
+  <div class="fixed inset-0 w-full h-full overflow-hidden -z-50">
+    <video autoplay muted loop playsinline class="w-full h-full object-cover ">
+      <source src="/assets/background.mp4" type="video/mp4">
+    </video>
+    <div class="absolute inset-0 bg-black/65"></div> 
+  </div>
+
+  <header class="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4">
+    
+    <nav class="capsule-nav rounded-full px-6 py-3 flex items-center relative w-full max-w-5xl">
+
+      <a id="nav-logo" href="/" class="text-2xl font-bold text-white whitespace-nowrap inline-flex items-center gap-2 transition-all duration-300 mr-auto">
+        <img src="../assets/only-logo.png" alt="logo" class="h-7 w-auto">
+        GrabMy<span class="text-violet-500 -mx-2">Passes</span>
+      </a>
+
+      <div id="nav-links" class="hidden md:flex items-center space-x-8 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-medium text-gray-300"></div>
+
+      <div class="flex items-center gap-3 z-10 ml-auto">
+        <div id="nav-search" class="hidden md:block w-56"></div>
+        <div id="auth-area" class="flex items-center space-x-3"></div>
+        <button class="md:hidden text-white ml-2" id="mobile-menu-btn">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden absolute top-24 left-4 right-4 bg-gray-900/95 backdrop-blur-xl p-6 rounded-2xl border border-white/10 shadow-2xl">
+      <a href="/" class="block text-gray-300 hover:text-white py-2">Home</a>
+      <a href="/events" class="block text-gray-300 hover:text-white py-2">Events</a>
+      <a href="/#how-it-works" class="block text-gray-300 hover:text-white py-2">How It Works</a>
+      <a href="/#testimonials" class="block text-gray-300 hover:text-white py-2">Testimonials</a>
+    </div>
+  </header>
+
+  <section class="relative min-h-screen flex items-center justify-center text-center px-6 overflow-hidden pt-24">
+    <div class="reveal-on-scroll max-w-4xl mx-auto">
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
+        Your Campus, Your Events.<br>
+        <span id="type-h1-2" class="bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-purple-400"></span>
+      </h1>
+
+      <p id="typed-output" class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+        Discover, book, and manage all your college fest and event passes in one place. 
+        No more queues, no more hassle — just scan your digital pass and walk in.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button id="hero-browse-btn" class="btn-primary text-lg flex items-center justify-center gap-2">
+          <i data-lucide="ticket" class="w-5 h-5"></i>
+          Browse Events
+        </button>
+
+        <button onclick="window.location.href='/signup?role=organizer'" class="btn-secondary text-lg flex items-center justify-center gap-2">
+          <i data-lucide="edit-3" class="w-5 h-5"></i>
+          Become an Organizer
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24 relative bg-transparent bg-grid-pattern">
+    
+    <div class="max-w-6xl mx-auto px-6 w-full relative z-10">
+      
+      <div class="mb-16 max-w-2xl reveal-on-scroll">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+              Why <span class="text-violet-500">GrabMyPasses?</span>
+          </h2>
+          <p class="text-gray-400 text-lg leading-relaxed">
+              The ultimate platform for managing college fests, events, and ticketing. 
+              Seamless, secure, and smart—designed for students.
+          </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[minmax(180px,auto)]">
+
+        <div class="group relative glow-card col-span-1 md:col-span-7 rounded-2xl p-8 md:p-10 flex flex-col justify-between reveal-on-scroll delay-100">
+          <div class="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-violet-500 rounded-full blur-[90px] opacity-20 group-hover:opacity-30 transition-opacity"></div>
+          
+          <div class="relative z-10">
+              <div class="w-14 h-14 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center mb-6 text-violet-400">
+                  <i data-lucide="layout-dashboard" class="w-7 h-7"></i>
+              </div>
+              <h3 class="text-2xl md:text-3xl font-bold text-white mb-3">All Campus Events, One Hub</h3>
+              <p class="text-gray-400 text-lg">Browse, filter, and book events from all societies and clubs in one unified dashboard.</p>
+          </div>
+        </div>
+
+        <div class="group relative glow-card col-span-1 md:col-span-5 rounded-2xl p-8 md:p-10 flex flex-col justify-between reveal-on-scroll delay-200">
+          <div class="w-14 h-14 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center mb-6 text-violet-400">
+              <i data-lucide="qr-code" class="w-7 h-7"></i>
+          </div>
+          <div>
+              <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Instant QR Ticketing</h3>
+              <p class="text-gray-400">Book a seat and receive a unique, verifiable QR code instantly.</p>
+          </div>
+        </div>
+
+        <div class="group relative glow-card col-span-1 md:col-span-4 rounded-2xl p-8 reveal-on-scroll delay-300">
+          <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-5 text-violet-400 group-hover:bg-violet-500/10 transition-colors">
+              <i data-lucide="scan-line" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Fast Check-ins</h3>
+          <p class="text-sm text-gray-400">Organizers can scan and verify tickets in seconds at the gate.</p>
+        </div>
+
+        <div class="group relative glow-card col-span-1 md:col-span-4 rounded-2xl p-8 reveal-on-scroll delay-400">
+          <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-5 text-violet-400 group-hover:bg-violet-500/10 transition-colors">
+              <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Live Analytics</h3>
+          <p class="text-sm text-gray-400">Track registrations, revenue, and attendance in real-time.</p>
+        </div>
+
+        <div class="group relative glow-card col-span-1 md:col-span-4 rounded-2xl p-8 reveal-on-scroll delay-500">
+          <div class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-5 text-violet-400 group-hover:bg-violet-500/10 transition-colors">
+              <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Secure & Verified</h3>
+          <p class="text-sm text-gray-400">Eliminate fake tickets with our secure database validation.</p>
+        </div>
+
+        <div class="group relative glow-card col-span-1 md:col-span-12 bg-transparent to-slate-900/30 rounded-2xl p-10 flex flex-col md:flex-row items-center justify-between gap-6 reveal-on-scroll delay-200">
+          <div class="flex items-center gap-6">
+              <div class="hidden md:flex w-16 h-16 bg-transparent rounded-2xl items-center justify-center text-violet-400 shrink-0 border border-violet-500/30">
+                  <i data-lucide="rocket" class="w-8 h-8"></i>
+              </div>
+              <div>
+                  <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">Let's get started.</h3>
+                  <p class="text-gray-400 text-lg">Hosting an event? Launch it on GrabMyPasses in minutes.</p>
+              </div>
+          </div>
+          
+          <button onclick="window.location.href='/signup?role=organizer'" class="px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-900/40 hover:shadow-violet-600/50 hover:-translate-y-1 flex items-center gap-2 whitespace-nowrap">
+              <span>Create Event</span>
+              <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="home-events-section" class="py-16 relative bg-transparent overflow-hidden">
+    <div class="container mx-auto px-6 relative z-10">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 pl-2">
+        <div class="relative z-10">
+          <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight flex items-center gap-3">
+             Events for <span class="text-transparent bg-clip-text bg-violet-500">you</span>
+          </h2>
+          <p id="home-events-subtitle" class="text-base text-gray-400 mt-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-violet-500 animate-pulse"></span>
+            <a href="/login" class="hover:text-violet-400 transition-colors">Login to see personalized events.</a>
+          </p>
+        </div>
+
+        <button id="view-all-events-btn" onclick="window.location.href='/events'"
+          class="hidden md:inline-flex px-6 py-2.5 rounded-full border border-white/10 hover:bg-white/5 text-sm font-medium text-white transition items-center gap-2 group">
+          View All
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+      </div>
+
+      <div class="relative group/carousel w-full mt-7">
+        
+        <button id="scroll-left-btn" class="carousel-btn left">
+            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+        </button>
+
+        <button id="scroll-right-btn" class="carousel-btn right">
+            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+        </button>
+
+        <div id="home-events-grid" class="carousel-viewport">
+            </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section class="py-24 bg-transparent relative overflow-hidden" id="faq">
+  <div class="max-w-3xl mx-auto px-6 relative z-10">
+    
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Frequently Asked <span class="text-violet-500">Questions</span></h2>
+      <p class="text-gray-400">Everything you need to know about GrabMyPasses.</p>
+    </div>
+
+    <div class="space-y-4">
+      
+      <div class="faq-item glow-card group">
+        <button class="faq-toggle w-full flex items-center justify-between p-6 text-left cursor-pointer focus:outline-none relative z-10">
+          <span class="text-lg font-medium text-white">Is GrabMyPasses free to use?</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 text-violet-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
+        </button>
+        <div class="faq-content grid grid-rows-[0fr] transition-all duration-300 ease-in-out relative z-10">
+          <div class="overflow-hidden">
+            <p class="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/10 pt-4">
+              Yes! For students booking free events, it's completely free. For paid events, a small platform fee may apply.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glow-card group">
+        <button class="faq-toggle w-full flex items-center justify-between p-6 text-left cursor-pointer focus:outline-none relative z-10">
+          <span class="text-lg font-medium text-white">How do I verify my ticket?</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 text-violet-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
+        </button>
+        <div class="faq-content grid grid-rows-[0fr] transition-all duration-300 ease-in-out relative z-10">
+          <div class="overflow-hidden">
+            <p class="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/10 pt-4">
+              Simply show your QR code at the event entrance. The organizers will scan it using their dashboard scanner.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glow-card group">
+        <button class="faq-toggle w-full flex items-center justify-between p-6 text-left cursor-pointer focus:outline-none relative z-10">
+          <span class="text-lg font-medium text-white">Can I cancel my booking?</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 text-violet-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
+        </button>
+        <div class="faq-content grid grid-rows-[0fr] transition-all duration-300 ease-in-out relative z-10">
+          <div class="overflow-hidden">
+            <p class="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/10 pt-4">
+              Cancellations depend on the event organizer's policy. Check the specific event details page for more info.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glow-card group">
+        <button class="faq-toggle w-full flex items-center justify-between p-6 text-left cursor-pointer focus:outline-none relative z-10">
+          <span class="text-lg font-medium text-white">Do I need to print the ticket?</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 text-violet-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
+        </button>
+        <div class="faq-content grid grid-rows-[0fr] transition-all duration-300 ease-in-out relative z-10">
+          <div class="overflow-hidden">
+            <p class="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/10 pt-4">
+              No, a physical copy is not required. You can show the digital QR code on your phone at the entry gate.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glow-card group">
+        <button class="faq-toggle w-full flex items-center justify-between p-6 text-left cursor-pointer focus:outline-none relative z-10">
+          <span class="text-lg font-medium text-white">Who do I contact for support?</span>
+          <i data-lucide="chevron-down" class="w-5 h-5 text-violet-500 transition-transform duration-300 group-[.active]:rotate-180"></i>
+        </button>
+        <div class="faq-content grid grid-rows-[0fr] transition-all duration-300 ease-in-out relative z-10">
+          <div class="overflow-hidden">
+            <p class="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/10 pt-4">
+              You can reach out to us via the <a href="/contact" class="text-violet-400 hover:underline">Contact Us</a> page.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+  <footer class="bg-[#0b0b14] bg-transparent border-t border-white/10 pt-16 pb-8 mt-20 relative overflow-hidden">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-violet-600/10 blur-[100px] pointer-events-none"></div>
+
+  <div class="container mx-auto px-6 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      
+      <div class="col-span-1 md:col-span-1">
+        <a href="/" class="text-2xl font-bold text-white inline-flex items-center gap-2 mb-4">
+          <img src="../assets/only-logo.png" alt="logo" class="h-8 w-auto">
+          GrabMy<span class="text-violet-500 -mx-1">Passes</span>
+        </a>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Your one-stop destination for all college events. Book tickets, manage entries, and experience the vibe.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-4 text-lg">Discover</h4>
+        <ul class="space-y-3 text-sm text-gray-400">
+          <li>
+            <a href="/events" class="hover:text-violet-400 transition-colors flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4"></i> Browse Events
+            </a>
+          </li>
+          <li>
+            <a href="/signup?role=organizer" class="hover:text-violet-400 transition-colors flex items-center gap-2">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> List Your Events
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-4 text-lg">Legal</h4>
+        <ul class="space-y-3 text-sm text-gray-400">
+          <li>
+            <a href="/terms" class="hover:text-violet-400 transition-colors bg-transparent">Terms & Conditions</a>
+          </li>
+          <li>
+            <a href="/privacy" class="hover:text-violet-400 transition-colors">Privacy Policy</a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold mb-4 text-lg">Support</h4>
+        <ul class="space-y-3 text-sm text-gray-400">
+          <li>
+            <a href="/contact" class="hover:text-violet-400 transition-colors flex items-center gap-2">
+              <i data-lucide="mail" class="w-4 h-4"></i> Contact Us
+            </a>
+          </li>
+          <li class="text-xs text-gray-500 mt-2">
+            Have a query? Reach out to us anytime.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-white/5 pt-8 text-center">
+      <p class="text-gray-400 text-sm flex items-center justify-center gap-1.5">
+        Made with <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-red-500 animate-pulse"></i> by <span class="text-white font-semibold">Ravi</span>
+      </p>
+      <p class="text-gray-600 text-xs mt-2">&copy; 2025 GrabMyPasses. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+  
+
+  <script src="script.js"></script>
+</body>
+</html>

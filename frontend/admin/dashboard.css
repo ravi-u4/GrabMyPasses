@@ -1,0 +1,198 @@
+/* frontend/admin/dashboard.css */
+
+body {
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #0F0F1A;
+}
+
+/* --- Global Purple Scrollbar --- */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050514; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6a28d4; /* Violet-600 */
+    border-radius: 10px;
+    border: 2px solid #050514;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed; /* Violet-700 */
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #6425c9 #050514;
+}
+
+/* Navbar Animations */
+.header-hidden { transform: translateY(-100%); }
+
+.nav-item { position: relative; padding-bottom: 2px; }
+.nav-item::after {
+  content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px;
+  background-color: #8b5cf6; transition: width 0.3s ease;
+}
+.nav-item:hover::after { width: 100%; }
+.nav-item.active { color: #fff; font-weight: 600; }
+.nav-item.active::after { width: 100%; }
+
+/* --- GLOW CARD (Bento Grid Style) --- */
+.glow-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  overflow: hidden;
+  isolation: isolate; 
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glow-card:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.3);
+  transform: translateY(-4px);
+}
+
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(139, 92, 246, 0.15),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.glow-card:hover::after { 
+    opacity: 1; 
+}
+
+/* --- Floating Create Button --- */
+.floating-create-btn {
+    position: fixed;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    z-index: 50;
+    text-decoration: none;
+}
+
+/* Inner Container - UPDATED: Transparent/Glass Theme Default */
+.btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0; 
+    
+    /* Transparent Background with Blur */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
+    color: white;
+    
+    height: 3.5rem; 
+    width: 3.5rem;
+    border-radius: 9999px;
+    
+    /* Visible Border by Default */
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.btn-text {
+    max-width: 0;
+    opacity: 0;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+/* HOVER STATE: Expand & Intensify Glow */
+.floating-create-btn:hover .btn-content {
+    width: auto;
+    padding-left: 1.25rem;
+    padding-right: 1.5rem;
+    gap: 0.75rem;
+    
+    background: rgba(255, 255, 255, 0.08); /* Slightly brighter on hover */
+    border-color: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.25);
+}
+
+.floating-create-btn:hover .btn-text {
+    max-width: 150px;
+    opacity: 1;
+}
+
+.floating-create-btn:hover i {
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+    color: #a78bfa; /* Light violet icon on hover */
+}
+
+/* Glow Effect Behind */
+.glow-effect {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: #7c3aed;
+    filter: blur(15px);
+    opacity: 0; /* Hidden by default for cleaner look, appears on hover */
+    transition: opacity 0.3s;
+    z-index: -1;
+}
+
+.floating-create-btn:hover .glow-effect {
+    opacity: 0.3; /* Subtle glow on hover */
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.15; }
+    100% { transform: scale(1); opacity: 0.3; }
+}
+
+/* --- Modal/Popup Styling --- */
+#participantsModal, #detailsModal {
+    backdrop-filter: blur(8px);
+}
+
+#modalContent, .bg-\[\#181825\] {
+    background: #13131f; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* --- Scrollable Description --- */
+#detailDesc {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+    display: block;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+#detailDesc::-webkit-scrollbar { display: none; }
+#detailDesc { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom Scroll for Participants List */
+.custom-scroll::-webkit-scrollbar { width: 6px; }
+.custom-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+.custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; border: none; }

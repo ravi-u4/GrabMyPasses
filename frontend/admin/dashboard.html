@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <title>Organizer Dashboard - GrabMyPasses</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body class="bg-slate-950 text-gray-100 font-[Inter] overflow-x-hidden min-h-screen flex flex-col relative">
+
+  <div class="fixed inset-0 w-full h-full overflow-hidden -z-50">
+    <video autoplay muted loop playsinline class="w-full h-full object-cover">
+      <source src="../assets/background.mp4" type="video/mp4">
+    </video>
+    <div class="absolute inset-0 bg-black/65"></div> 
+  </div>
+
+  <header class="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 transition-transform duration-300">
+    <nav class="capsule-nav rounded-full px-6 py-3 flex items-center relative w-full max-w-5xl bg-[#0f0f1a]/90 backdrop-blur-md border border-white/10 shadow-lg">
+      
+      <a id="nav-logo" href="dashboard.html" class="mr-auto text-2xl font-bold text-white whitespace-nowrap inline-flex items-center gap-2 transition-all duration-300">
+        <img src="../assets/only-logo.png" alt="logo" class="h-7 w-auto">
+        GrabMy<span class="text-violet-500 -mx-2">Passes</span>
+      </a>
+
+      <div id="nav-links" class="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-medium text-gray-300">
+        <a href="dashboard.html" class="nav-item active text-white transition-colors">Dashboard</a>
+        <a href="create-event.html" class="nav-item hover:text-white transition-colors">Create Event</a>
+        <a href="scan.html" class="nav-item hover:text-white transition-colors flex items-center gap-2">
+           <i data-lucide="qr-code" class="w-4 h-4"></i> Scan
+        </a>
+      </div>
+
+      <div class="flex items-center gap-3 z-10 ml-auto">
+        <div class="relative">
+            <button id="org-menu-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold border-2 border-white/20 hover:shadow-[0_0_15px_rgba(139,92,246,0.6)] transition-all">
+                OR
+            </button>
+            <div id="org-dropdown" class="hidden absolute right-0 mt-3 w-64 bg-[#181624] border border-gray-700 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                <div class="px-5 py-3 border-b border-gray-700">
+                    <p id="nav-org-name" class="text-white font-bold truncate">Organizer</p>
+                    <p class="text-xs text-violet-400 font-medium">Organizer Account</p>
+                </div>
+                <div class="py-1">
+                     <a href="profile.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="user" class="w-4 h-4 mr-3 text-gray-500"></i> Manage Profile</a>
+                     <a href="dashboard.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="layout-dashboard" class="w-4 h-4 mr-3 text-gray-500"></i> Dashboard</a>
+                     <a href="create-event.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="plus-circle" class="w-4 h-4 mr-3 text-gray-500"></i> Create Event</a>
+                     <a href="scan.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="scan-line" class="w-4 h-4 mr-3 text-gray-500"></i> Verify Passes</a>
+                </div>
+                <div class="border-t border-gray-700 mt-1 pt-1">
+                    <button onclick="logoutAdmin()" class="w-full flex items-center px-5 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition"><i data-lucide="log-out" class="w-4 h-4 mr-3"></i> Sign out</button>
+                </div>
+            </div>
+        </div>
+        <button class="md:hidden text-white ml-2" id="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden absolute top-24 left-4 right-4 bg-[#0f0f1a] p-6 rounded-2xl border border-white/10 shadow-2xl flex-col gap-4 z-50">
+        <a href="profile.html" class="text-gray-300 hover:text-white py-2">Manage Profile</a>
+        <a href="dashboard.html" class="text-white font-medium py-2">Dashboard</a>
+        <a href="create-event.html" class="text-gray-300 hover:text-white py-2">Create Event</a>
+        <a href="scan.html" class="text-gray-300 hover:text-white flex items-center gap-2 py-2"><i data-lucide="qr-code" class="w-4 h-4"></i> Scan</a>
+    </div>
+  </header>
+
+  <main class="min-h-screen pt-32 pb-20 container mx-auto px-6 max-w-6xl w-full">
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="glow-card p-6 relative overflow-hidden group rounded-2xl border border-white/5 bg-[#13131f]/80 backdrop-blur-md">
+            <div class="relative z-10">
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Events</p>
+                <h3 id="stat-events" class="text-4xl font-black text-white mt-1 drop-shadow-sm">0</h3>
+            </div>
+            <i data-lucide="calendar" class="absolute right-6 bottom-4 w-16 h-16 text-white/5 transition-colors group-hover:text-violet-500/10"></i>
+        </div>
+        
+        <div class="glow-card p-6 relative overflow-hidden group rounded-2xl border border-white/5 bg-[#13131f]/80 backdrop-blur-md">
+            <div class="relative z-10">
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Tickets Sold</p>
+                <h3 id="stat-tickets" class="text-4xl font-black text-violet-400 mt-1 drop-shadow-sm">0</h3>
+            </div>
+            <i data-lucide="ticket" class="absolute right-6 bottom-4 w-16 h-16 text-violet-500/5 transition-colors group-hover:text-violet-500/10"></i>
+        </div>
+        
+        <div class="glow-card p-6 relative overflow-hidden group rounded-2xl border border-white/5 bg-[#13131f]/80 backdrop-blur-md">
+            <div class="relative z-10">
+                <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Revenue</p>
+                <h3 id="stat-revenue" class="text-4xl font-black text-green-400 mt-1 drop-shadow-sm">₹0</h3>
+            </div>
+            <i data-lucide="indian-rupee" class="absolute right-6 bottom-4 w-16 h-16 text-green-500/5 transition-colors group-hover:text-green-500/10"></i>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-white">Your <span class="text-violet-500">Events</span></h2>
+    </div>
+
+    <div id="event-tabs" class="flex overflow-x-auto gap-2 mb-8 pb-2 custom-scroll hidden scroll-smooth border-b border-white/5">
+        <button onclick="switchTab('all')" id="tab-all" class="tab-btn px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5">All</button>
+        <button onclick="switchTab('live')" id="tab-live" class="tab-btn px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5">Live</button>
+        <button onclick="switchTab('upcoming')" id="tab-upcoming" class="tab-btn px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5">Upcoming</button>
+        <button onclick="switchTab('scheduled')" id="tab-scheduled" class="tab-btn px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5">Scheduled</button>
+        <button onclick="switchTab('past')" id="tab-past" class="tab-btn px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5">Past</button>
+    </div>
+
+    <div id="admin-events" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <p class="text-gray-400 col-span-full text-center py-10 flex flex-col items-center justify-center gap-3">
+            <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-violet-500"></i>
+            Loading events...
+        </p>
+    </div>
+
+    <div id="pagination-controls" class="mt-12 mb-4 flex flex-wrap justify-center items-center gap-2"></div>
+
+  </main>
+
+  <footer class="bg-[#0b0b14] bg-transparent border-t border-white/10 pt-16 pb-12 relative overflow-hidden w-full z-10">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-violet-600/10 blur-[100px] pointer-events-none"></div>
+
+    <div class="container mx-auto px-6 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div class="col-span-1 md:col-span-1">
+          <a href="dashboard.html" class="text-2xl font-bold text-white inline-flex items-center gap-2 mb-4">
+            <img src="../assets/only-logo.png" alt="logo" class="h-8 w-auto">
+            GrabMy<span class="text-violet-500 -mx-1">Passes</span>
+          </a>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            Your one-stop destination for all college events. Book tickets, manage entries, and experience the vibe.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4 text-lg">Discover</h4>
+          <ul class="space-y-3 text-sm text-gray-400">
+            <li><a href="dashboard.html" class="hover:text-violet-400 transition-colors flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> Browse Events</a></li>
+            <li><a href="create-event.html" class="hover:text-violet-400 transition-colors flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> List Your Events</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4 text-lg">Legal</h4>
+          <ul class="space-y-3 text-sm text-gray-400">
+            <li><a href="/terms" class="hover:text-violet-400 transition-colors">Terms & Conditions</a></li>
+            <li><a href="/privacy" class="hover:text-violet-400 transition-colors">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4 text-lg">Support</h4>
+          <ul class="space-y-3 text-sm text-gray-400">
+            <li><a href="/contact" class="hover:text-violet-400 transition-colors flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> Contact Us</a></li>
+            <li class="text-xs text-gray-500 mt-2">Have a query? Reach out to us anytime.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 text-center">
+        <p class="text-gray-400 text-sm flex items-center justify-center gap-1.5">
+          Made with <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-red-500 animate-pulse"></i> by <span class="text-white font-semibold">Ravi</span>
+        </p>
+        <p class="text-gray-600 text-xs mt-2">&copy; 2025 GrabMyPasses. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="create-event.html" class="floating-create-btn group">
+    <div class="glow-effect"></div>
+    <div class="btn-content">
+        <i data-lucide="plus" class="w-6 h-6"></i>
+        <span class="btn-text">Create Event</span>
+    </div>
+  </a>
+
+  <div id="participantsModal" class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#0f0f1a] w-full max-w-2xl rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative flex flex-col max-h-[85vh]">
+        <div class="p-6 border-b border-white/5 flex justify-between items-start bg-white/5">
+            <div>
+                 <h2 id="modalTitle" class="text-xl font-bold text-white">Event Title</h2>
+                 <p id="modalSubtitle" class="text-sm text-gray-400 mt-1">Fetching list...</p>
+            </div>
+            <div class="text-right">
+                 <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">REVENUE</p>
+                 <p id="modalRevenue" class="text-xl font-bold text-green-400 font-mono">₹0</p>
+            </div>
+        </div>
+        <div id="participantsList" class="p-4 overflow-y-auto flex-1 space-y-2 custom-scroll"></div>
+        <div class="p-4 border-t border-white/5 bg-gray-900/50 text-center">
+            <button onclick="document.getElementById('participantsModal').classList.add('hidden')" class="px-8 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-full text-sm font-medium transition cursor-pointer">Close</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="detailsModal" class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#181825] w-full max-w-lg rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative">
+        <div class="relative h-56">
+            <img id="detailImg" src="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#181825] to-transparent"></div>
+            <button onclick="document.getElementById('detailsModal').classList.add('hidden')" class="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full backdrop-blur-md transition border border-white/10 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="p-8 -mt-8 relative z-10">
+            <h2 id="detailTitle" class="text-3xl font-bold text-white mb-3 leading-tight"></h2>
+            <div class="flex flex-wrap gap-4 text-sm text-gray-400 mb-6">
+                 <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5"><span id="detailDate"></span></div>
+                 <div class="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5"><span id="detailVenue"></span></div>
+            </div>
+            <div class="prose prose-invert prose-sm max-w-none"><p id="detailDesc" class="text-gray-300 leading-relaxed"></p></div>
+        </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

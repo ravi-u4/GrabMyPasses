@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Terms and Conditions - GrabMyPasses</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../../landing-page/styles.css">
+</head>
+<body class="bg-[#0F0F1A] bg-transparent text-gray-300 font-sans p-8 md:p-16">
+  <div class="fixed inset-0 w-full h-full overflow-hidden -z-50">
+    <video autoplay muted loop playsinline class="w-full h-full object-cover ">
+      <source src="../assets/background.mp4" type="video/mp4">
+    </video>
+    <div class="absolute inset-0 bg-black/70"></div> 
+  </div>
+  <div class="max-w-3xl mx-auto">
+    
+    <a id="back-link" href="../../landing-page/index.html" class="text-violet-400 hover:text-white mb-8 inline-block transition-colors font-medium">
+      &larr; Back to Home
+    </a>
+    
+    <h1 class="text-3xl font-bold text-white mb-6">Terms and Conditions</h1>
+    <p class="mb-4">Welcome to GrabMyPasses. By using our website, you agree to comply with and be bound by the following terms and conditions of use.</p>
+    
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">1. Ticket Booking</h2>
+    <p class="mb-4">All tickets sold are final. Cancellations and refunds are subject to the specific event organizer's policy. GrabMyPasses is a platform provider and is not responsible for event cancellations.</p>
+
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">2. User Conduct</h2>
+    <p class="mb-4">Users must provide accurate information during registration. Any misuse of the platform, including generating fake passes, will result in immediate account termination.</p>
+
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">3. Event Entry</h2>
+    <p class="mb-4">Entry to events is subject to the verification of the QR code provided. The organizer reserves the right to deny entry if the pass is found to be invalid or duplicated.</p>
+    
+    <div class="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-500">
+      Last updated: December 2025
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if Organizer is logged in
+      const organizer = JSON.parse(localStorage.getItem("organizer"));
+      const backLink = document.getElementById("back-link");
+
+      if (organizer && backLink) {
+        // Redirect to Dashboard instead of Home
+        backLink.href = "../admin/dashboard.html"; 
+        backLink.innerHTML = "&larr; Back to Dashboard";
+      }
+    });
+  </script>
+</body>
+</html>

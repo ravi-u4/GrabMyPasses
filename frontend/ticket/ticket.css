@@ -1,0 +1,158 @@
+/* ========================================= */
+/* 1. BACKGROUND VIDEO & GLOBAL OVERLAYS     */
+/* ========================================= */
+#bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -10;
+  filter: brightness(0.4); /* Darkens video for better text readability */
+}
+
+/* Original background blob as a fallback or secondary layer */
+.bg-blob {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 400px;
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  filter: blur(100px);
+  opacity: 0.15;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* ========================================= */
+/* 2. ENHANCED GLASS TICKET STYLES           */
+/* ========================================= */
+.glass-ticket {
+  position: relative;
+  max-width: 850px;
+  margin: 0 auto;
+  
+  /* High transparency to reveal background video/blobs */
+  background: rgba(255, 255, 255, 0.01) !important;
+  
+  /* Reduced blur for a "clearer" glass look */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+
+  /* Smooth transition for tilt and hover */
+  transition: transform 0.1s ease-out, box-shadow 0.5s ease, border-color 0.5s ease, background 0.5s ease;
+  will-change: transform;
+}
+
+/* Interactive Hover State */
+.glass-ticket:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(139, 92, 246, 0.4); /* Violet border glow */
+  box-shadow: 0 40px 80px -15px rgba(124, 58, 237, 0.3); /* Violet shadow glow */
+}
+
+/* Right-side QR section transparency */
+.glass-ticket .bg-black\/20 {
+  background: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ========================================= */
+/* 3. PERFORATION & LAYOUT                   */
+/* ========================================= */
+.perforation {
+  position: relative;
+  width: 2px;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%);
+  background-size: 2px 16px;
+  margin: 0 20px;
+}
+
+.perforation::before,
+.perforation::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px; height: 24px;
+  background: #050514; /* Matches body color for "cutout" effect */
+  border-radius: 50%;
+}
+
+.perforation::before { top: -12px; }
+.perforation::after { bottom: -12px; }
+
+@media (max-width: 768px) {
+  .glass-ticket { 
+    flex-direction: column;
+    margin: 0 10px;
+  }
+  .perforation {
+    width: 100%; height: 2px;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.15) 50%, transparent 50%);
+    background-size: 16px 2px;
+    margin: 20px 0;
+  }
+  .perforation::before { left: -12px; top: 50%; transform: translateY(-50%); }
+  .perforation::after { right: -12px; left: auto; top: 50%; transform: translateY(-50%); }
+}
+
+/* PDF/Download mode - Removes transparency for clean rendering */
+.pdf-mode {
+  background: #050514 !important;
+  border: 2px solid #333 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  color: white !important;
+  transform: none !important;
+}
+
+/* ========================================= */
+/* 4. TOAST NOTIFICATIONS                    */
+/* ========================================= */
+#toast-container {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 50px;
+  background: rgba(20, 20, 35, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  animation: pop-up 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.toast.success { border-bottom: 3px solid #10b981; }
+.toast.error { border-bottom: 3px solid #ef4444; }
+
+@keyframes pop-up {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}

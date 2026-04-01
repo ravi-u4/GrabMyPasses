@@ -1,0 +1,71 @@
+/* Same styles as user login */
+.login {
+  background: rgba(20, 20, 35, 0.6) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.login::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(139, 92, 246, 0.15),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.login:hover::after { opacity: 1; }
+.login:hover { border-color: rgba(139, 92, 246, 0.5); }
+
+/* Toast Styles */
+#toast-container {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 50px;
+  background: rgba(20, 20, 35, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  animation: pop-up 0.4s forwards;
+}
+
+.toast.success { border-bottom: 3px solid #10b981; }
+.toast.error { border-bottom: 3px solid #ef4444; }
+
+@keyframes pop-up {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}

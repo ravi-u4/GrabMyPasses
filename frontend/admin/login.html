@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - GrabMyPasses</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../login/styles.css">
+  <link rel="stylesheet" href="login.css">
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body style="background-color: #0F0F1A; overflow: hidden;">
+
+  <div style="position: fixed; inset: 0; width: 100%; height: 100%; z-index: -50; overflow: hidden;">
+    <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+      <source src="/assets/background.mp4" type="video/mp4">
+    </video>
+    <div style="position: absolute; inset: 0; background: rgba(15, 15, 26, 0.6);"></div> 
+  </div>
+
+  <img src="../assets/blob.svg" class="blob">
+  <div class="orbit"></div>
+
+  <div class="login" id="admin-login-card">
+    <a href="/">
+      <img src="../assets/new-logo.png" alt="GrabMyPasses Logo" />
+    </a>
+
+    <h2>Organizer Login</h2>
+    <h3>Access your event dashboard</h3>
+
+    <form class="form">
+      <div class="textbox">
+        <input id="adminEmail" required type="email" placeholder=" ">
+        <label>Email</label>
+      </div>
+      <div class="textbox">
+        <input id="adminPassword" required type="password" placeholder=" ">
+        <label>Password</label>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+
+    <p class="footer" style="margin-bottom: 4px;">
+      Don't have an account? <a href="../signup/signup.html?role=organizer">Register!</a>
+    </p>
+
+    <p class="footer">
+      Back to <a href="/">Home</a>
+    </p>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

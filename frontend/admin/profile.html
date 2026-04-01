@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Profile | GrabMyPasses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <link rel="stylesheet" href="create-event.css">
+    <style>
+        #deleteModal { transition: opacity 0.3s ease; }
+        #deleteModal.hidden { opacity: 0; pointer-events: none; }
+        #deleteModal:not(.hidden) { opacity: 1; pointer-events: auto; }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.6;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-gray-100 overflow-x-hidden flex flex-col min-h-screen selection:bg-violet-500/30">
+
+    <div class="fixed inset-0 w-full h-full overflow-hidden -z-50">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover ">
+            <source src="../assets/background.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-black/65"></div> 
+    </div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 transition-transform duration-300">
+        <nav class="capsule-nav rounded-full px-6 py-3 flex items-center relative w-full max-w-5xl bg-[#0f0f1a]/90 backdrop-blur-md border border-white/10 shadow-lg">
+          
+          <a id="nav-logo" href="dashboard.html" class="mr-auto text-2xl font-bold text-white whitespace-nowrap inline-flex items-center gap-2 transition-all duration-300">
+            <img src="../assets/only-logo.png" alt="logo" class="h-7 w-auto">
+            GrabMy<span class="text-violet-500 -mx-2">Passes</span>
+          </a>
+    
+          <div id="nav-links" class="hidden md:flex items-center gap-8 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm font-medium text-gray-300">
+            <a href="dashboard.html" class="nav-item hover:text-white transition-colors">Dashboard</a>
+            <a href="create-event.html" class="nav-item hover:text-white transition-colors">Create Event</a>
+            <a href="scan.html" class="nav-item hover:text-white transition-colors flex items-center gap-2">
+               <i data-lucide="qr-code" class="w-4 h-4"></i> Scan
+            </a>
+          </div>
+    
+          <div class="flex items-center gap-3 z-10 ml-auto">
+             <div class="relative">
+                <button id="org-menu-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold border-2 border-white/20 hover:shadow-[0_0_15px_rgba(139,92,246,0.6)] transition-all">
+                    OR
+                </button>
+                <div id="org-dropdown" class="hidden absolute right-0 mt-3 w-64 bg-[#181624] border border-gray-700 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                    <div class="px-5 py-3 border-b border-gray-700">
+                        <p id="nav-org-name" class="text-white font-bold truncate">Organizer</p>
+                        <p class="text-xs text-violet-400 font-medium">Organizer Account</p>
+                    </div>
+                    <div class="py-1">
+                         <a href="profile.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="user" class="w-4 h-4 mr-3 text-gray-500"></i> Manage Profile</a>
+                         <a href="dashboard.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="layout-dashboard" class="w-4 h-4 mr-3 text-gray-500"></i> Dashboard</a>
+                         <a href="create-event.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="plus-circle" class="w-4 h-4 mr-3 text-gray-500"></i> Create Event</a>
+                         <a href="scan.html" class="flex items-center px-5 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition"><i data-lucide="scan-line" class="w-4 h-4 mr-3 text-gray-500"></i> Verify Passes</a>
+                    </div>
+                    <div class="border-t border-gray-700 mt-1 pt-1">
+                        <button onclick="logoutAdmin()" class="w-full flex items-center px-5 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition"><i data-lucide="log-out" class="w-4 h-4 mr-3"></i> Sign out</button>
+                    </div>
+                </div>
+            </div>
+            <button class="md:hidden text-white ml-2" id="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </nav>
+
+        <div id="mobile-menu" class="hidden absolute top-24 left-4 right-4 bg-[#0f0f1a] p-6 rounded-2xl border border-white/10 shadow-2xl flex-col gap-4 z-50">
+            <a href="profile.html" class="text-white font-medium py-2">Manage Profile</a>
+            <a href="dashboard.html" class="text-gray-300 hover:text-white py-2">Dashboard</a>
+            <a href="create-event.html" class="text-gray-300 hover:text-white py-2">Create Event</a>
+            <a href="scan.html" class="text-gray-300 hover:text-white flex items-center gap-2 py-2">
+                <i data-lucide="qr-code" class="w-4 h-4"></i> Scan
+            </a>
+        </div>
+    </header>
+
+    <main class="relative z-10 pt-32 pb-20 px-4 min-h-screen w-full flex-grow">
+        <div class="max-w-4xl mx-auto mb-10 text-center relative">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-3 tracking-tight">Organizer <span class="italic text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-300">Profile</span></h1>
+            <p class="text-gray-400 font-[Inter] max-w-lg mx-auto">Update your details or manage your account status.</p>
+        </div>
+
+        <div class="max-w-3xl mx-auto">
+            <form id="profileForm" class="glass-card-premium rounded-3xl p-1 relative glow-container overflow-hidden bg-transparent">
+                
+                <div class="p-8 md:p-12 relative z-10 ">
+                    
+                    <div class="mb-8">
+                        <h3 class="text-lg text-white mb-6 flex items-center gap-2 font-[Inter]">
+                            <span class="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 text-xs font-bold border border-violet-500/30"><i data-lucide="user" class="w-4 h-4"></i></span>
+                            Personal Details
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div class="input-group">
+                                <input type="text" name="name" id="name" class="input-field" placeholder=" " required>
+                                <label for="name" class="input-label">Full Name</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="email" name="email" id="email" class="input-field cursor-not-allowed opacity-70" placeholder=" " readonly>
+                                <label for="email" class="input-label">Email (Locked)</label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div class="input-group">
+                                <input type="text" name="college" id="college" class="input-field" placeholder=" " required>
+                                <label for="college" class="input-label">College / Organization</label>
+                            </div>
+                            
+                            <div class="input-group">
+                                <input type="text" name="mobile" id="mobile" class="input-field cursor-not-allowed opacity-70" placeholder=" " readonly>
+                                <label for="mobile" class="input-label">Mobile Number (Locked)</label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div class="input-group">
+                                <input type="text" name="rollNo" id="rollNo" class="input-field" placeholder=" ">
+                                <label for="rollNo" class="input-label">Roll Number</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" name="course" id="course" class="input-field" placeholder=" ">
+                                <label for="course" class="input-label">Course / Branch</label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="input-group">
+                                <select name="gender" id="gender" class="input-field cursor-pointer">
+                                    <option value="" disabled selected></option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label for="gender" class="input-label">Gender</label>
+                                <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none mt-2"></i>
+                            </div>
+                            <div class="input-group">
+                                <input type="date" name="dob" id="dob" class="input-field" placeholder=" ">
+                                <label for="dob" class="input-label">Date of Birth</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent my-8"></div>
+
+                    <div class="mb-8">
+                        <h3 class="text-lg text-white mb-6 flex items-center gap-2 font-[Inter]">
+                            <span class="w-8 h-8 rounded-full bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-400 text-xs font-bold border border-fuchsia-500/30"><i data-lucide="lock" class="w-4 h-4"></i></span>
+                            Security
+                        </h3>
+
+                        <div class="input-group mb-0">
+                            <input type="password" name="password" id="password" class="input-field" placeholder=" ">
+                            <label for="password" class="input-label">New Password (Optional)</label>
+                            <p class="text-xs text-gray-500 mt-2 ml-1">Leave blank to keep your current password.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-4 mt-10">
+                        <button type="submit" class="group relative w-full py-4 rounded-xl bg-white text-black font-bold text-lg shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:-translate-y-1 transition-all duration-300 overflow-hidden font-[Inter]">
+                            <span class="relative flex items-center justify-center gap-3 z-10">
+                                Save Changes <i data-lucide="check-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            </span>
+                        </button>
+
+                        <button type="button" onclick="showDeleteModal()" class="w-full py-4 text-red-400 font-medium hover:text-red-300 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Delete Account
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div id="deleteModal" class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#181212] w-full max-w-md rounded-2xl border border-red-500/30 shadow-[0_0_50px_rgba(239,68,68,0.2)] relative overflow-hidden transform scale-95 transition-all duration-300">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-orange-600"></div>
+            
+            <div class="p-8 text-center relative z-10">
+                <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500 border border-red-500/20 shadow-lg shadow-red-900/20">
+                    <i data-lucide="alert-triangle" class="w-10 h-10"></i>
+                </div>
+                
+                <h3 class="text-2xl font-bold text-white mb-3">Delete Account?</h3>
+                <p class="text-gray-400 mb-8 leading-relaxed text-sm">
+                    Are you sure you want to permanently delete your account? <br><br>
+                    <span class="bg-red-500/10 text-red-400 px-3 py-1 rounded-md border border-red-500/20 font-medium">
+                        This action cannot be undone and we are not liable for data loss.
+                    </span>
+                </p>
+
+                <div class="flex gap-4">
+                    <button onclick="hideDeleteModal()" class="flex-1 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition border border-white/5">
+                        Cancel
+                    </button>
+                    <button onclick="confirmDeleteAccount()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold transition shadow-lg shadow-red-900/40 flex items-center justify-center gap-2">
+                        <i data-lucide="trash" class="w-4 h-4"></i> Confirm Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-[#0b0b14] bg-transparent border-t border-white/10 pt-16 pb-12 mt-auto relative overflow-hidden w-full z-10">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-violet-600/10 blur-[100px] pointer-events-none"></div>
+    
+        <div class="container mx-auto px-6 relative z-10">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div class="col-span-1 md:col-span-1">
+              <a href="dashboard.html" class="text-2xl font-bold text-white inline-flex items-center gap-2 mb-4">
+                <img src="../assets/only-logo.png" alt="logo" class="h-8 w-auto">
+                GrabMy<span class="text-violet-500 -mx-1">Passes</span>
+              </a>
+              <p class="text-gray-400 text-sm leading-relaxed">
+                Your one-stop destination for all college events. Book tickets, manage entries, and experience the vibe.
+              </p>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-4 text-lg">Discover</h4>
+              <ul class="space-y-3 text-sm text-gray-400">
+                <li><a href="dashboard.html" class="hover:text-violet-400 transition-colors flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard</a></li>
+                <li><a href="create-event.html" class="hover:text-violet-400 transition-colors flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> List Your Events</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-4 text-lg">Legal</h4>
+              <ul class="space-y-3 text-sm text-gray-400">
+                <li><a href="/terms" class="hover:text-violet-400 transition-colors">Terms & Conditions</a></li>
+                <li><a href="/privacy" class="hover:text-violet-400 transition-colors">Privacy Policy</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-4 text-lg">Support</h4>
+              <ul class="space-y-3 text-sm text-gray-400">
+                <li><a href="/contact" class="hover:text-violet-400 transition-colors flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> Contact Us</a></li>
+                <li class="text-xs text-gray-500 mt-2">Have a query? Reach out to us anytime.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="border-t border-white/5 pt-8 text-center">
+            <p class="text-gray-400 text-sm flex items-center justify-center gap-1.5">
+              Made with <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-red-500 animate-pulse"></i> by <span class="text-white font-semibold">Ravi</span>
+            </p>
+            <p class="text-gray-600 text-xs mt-2">&copy; 2025 GrabMyPasses. All rights reserved.</p>
+          </div>
+        </div>
+    </footer>
+
+    <div id="toast-container"></div>
+
+    <script src="profile.js"></script>
+</body>
+</html>
