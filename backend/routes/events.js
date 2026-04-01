@@ -4,33 +4,35 @@ const router = express.Router();
 const Event = require("../models/Event");
 const Booking = require("../models/Booking");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Setup Gemini AI using the key from your .env
+// Cloudinary Integrations
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+// Setup Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const uploadDir = path.join(__dirname, "../../frontend/uploads");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+// 1. Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, "event-" + uniqueSuffix + path.extname(file.originalname));
-    }
+// 2. Setup Cloudinary Storage for Multer
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "grabmypasses_events", // Folder name in your Cloudinary account
+    allowed_formats: ["jpg", "png", "jpeg", "webp"], 
+    // transformation: [{ width: 800, height: 600, crop: "limit" }] // Optional: auto-resize
+  },
 });
 
 const upload = multer({
-    storage: storage,
-    limits: { fileSize: 500 * 1024 }, // 500KB limit
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith("image/")) cb(null, true);
-        else cb(new Error("Only images are allowed"));
-    }
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // Increased to 2MB since cloud storage is robust
 });
 
 // GET all events
@@ -102,7 +104,8 @@ router.post("/", upload.single("bannerImage"), async (req, res) => {
     const eventData = {
       ...data,
       organizer: data.organizerId,
-      bannerUrl: req.file ? `/uploads/${req.file.filename}` : (data.bannerUrl || ""),
+      // req.file.path contains the secure Cloudinary URL
+      bannerUrl: req.file ? req.file.path : (data.bannerUrl || ""),
       participationType: data.participationType || 'Solo',
       teamSize: data.participationType === 'Team' ? (data.teamSize || 1) : 1,
       bookingStartTime: data.bookingStartTimeStr ? new Date(data.bookingStartTimeStr) : new Date(),
@@ -112,7 +115,10 @@ router.post("/", upload.single("bannerImage"), async (req, res) => {
     const event = await Event.create(eventData);
     return res.json({ success: true, message: "Event created", event });
   } catch (err) {
-    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') return res.json({ success: false, message: "File too large. Max size is 500KB." });
+    console.error(err);
+    if (err.message && err.message.includes("File size too large")) {
+        return res.json({ success: false, message: "File too large. Max size is 2MB." });
+    }
     return res.json({ success: false, message: "Server Error" });
   }
 });
@@ -141,7 +147,9 @@ router.put("/:id", upload.single("bannerImage"), async (req, res) => {
         if (data.bookingStartTimeStr) event.bookingStartTime = new Date(data.bookingStartTimeStr);
         if (data.contacts) { try { event.contacts = JSON.parse(data.contacts); } catch (e) {} }
         if (data.socialLinks) { try { event.socialLinks = JSON.parse(data.socialLinks); } catch (e) {} }
-        if (req.file) event.bannerUrl = `/uploads/${req.file.filename}`;
+        
+        // Update to new Cloudinary URL if a new file was uploaded
+        if (req.file) event.bannerUrl = req.file.path;
 
         await event.save();
         return res.json({ success: true, message: "Event updated successfully", event });
