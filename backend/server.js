@@ -14,9 +14,18 @@ const scanRoutes = require("./routes/scan");
 const app = express();
 
 // --------------------
-// Database
+// Database Middleware (Updated for Vercel)
 // --------------------
-connectDB();
+// Ensure DB is connected before any route is processed
+app.use(async (req, res, next) => {
+  try {
+    await connectDB(); 
+    next();
+  } catch (err) {
+    console.error("Database connection failed in middleware:", err);
+    res.status(500).json({ error: "Database connection error" });
+  }
+});
 
 // --------------------
 // Middlewares
