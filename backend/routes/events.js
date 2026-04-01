@@ -60,7 +60,10 @@ router.get("/my-events", async (req, res) => {
       events.map(async (event) => {
         const eventBookings = await Booking.find({ event: event._id });
         
-        const activeBookings = eventBookings.filter(b => b.status === "CONFIRMED" || b.status === "CHECKED_IN");
+        const activeBookings = eventBookings.filter(b => {
+    const status = (b.status || "").toUpperCase();
+    return status === "CONFIRMED" || status === "CHECKED_IN" || status === "SCANNED";
+});
         const ticketCount = activeBookings.length;
         
         const revenue = eventBookings.reduce((sum, b) => sum + (b.amountPaid !== undefined ? b.amountPaid : (event.price || 0)), 0);
