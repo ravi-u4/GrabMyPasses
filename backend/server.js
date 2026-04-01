@@ -109,8 +109,13 @@ app.use((req, res) =>
 );
 
 // --------------------
-// Start Server
+// Start Server / Export for Vercel
 // --------------------
-app.listen(5000,"0.0.0.0", () => {
-  console.log("✅ Server running on port 5000");
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(5000, "0.0.0.0", () => {
+    console.log("✅ Server running on port 5000");
+  });
+}
+
+// Vercel needs this export to run your Express app
+module.exports = app;
