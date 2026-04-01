@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const res = await fetch(`http://localhost:5000/api/bookings/me?email=${encodeURIComponent(user.email)}`);
+    const res = await fetch(`/api/bookings/me?email=${encodeURIComponent(user.email)}`);
     const data = await res.json();
 
     if (!data.success) {

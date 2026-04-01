@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     `).join('');
 
-    const res = await fetch("http://localhost:5000/api/events");
+    const res = await fetch("/api/events");
     const data = await res.json();
 
     if (!data.success || !data.events) {

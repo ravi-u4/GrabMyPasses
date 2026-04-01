@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const res = await fetch(`http://localhost:5000/api/events/${id}`);
+    const res = await fetch(`/api/events/${id}`);
     const data = await res.json();
 
     if (!data.success || !data.event) {
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         bookBtn.disabled = true;
 
         try {
-            const resB = await fetch("http://localhost:5000/api/bookings", {
+            const resB = await fetch("/api/bookings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: user.email, eventId: e._id, forceRebook })

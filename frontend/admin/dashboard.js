@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadDashboard() {
         try {
-            const res = await fetch(`http://localhost:5000/api/events/my-events?organizerId=${organizer._id}`);
+            const res = await fetch(`/api/events/my-events?organizerId=${organizer._id}`);
             const data = await res.json();
 
             if (data.success) {
@@ -289,7 +289,7 @@ function renderPaginationControls(totalPages) {
 
 window.togglePauseEvent = async function(id) {
     try {
-        const res = await fetch(`http://localhost:5000/api/events/${id}/toggle-pause`, { method: "PATCH" });
+        const res = await fetch(`/api/events/${id}/toggle-pause`, { method: "PATCH" });
         const data = await res.json();
         if (data.success) {
             const eventIndex = categorizedEvents.all.findIndex(e => e._id === id);
@@ -309,7 +309,7 @@ const modal = document.getElementById("detailsModal");
 
 window.openModal = async function(eventId) {
     try {
-        const res = await fetch(`http://localhost:5000/api/events/${eventId}`);
+        const res = await fetch(`/api/events/${eventId}`);
         const data = await res.json();
         if (data.success) {
             const ev = data.event;
@@ -338,7 +338,7 @@ window.openParticipantsModal = async function(eventId) {
     participantsModal.classList.add("flex");
 
     try {
-        const res = await fetch(`http://localhost:5000/api/bookings/event/${eventId}`);
+        const res = await fetch(`/api/bookings/event/${eventId}`);
         const data = await res.json();
 
         if (data.success) {
@@ -394,7 +394,7 @@ window.deleteEvent = async function(id) {
     if(!confirm("Are you sure? This will delete all bookings associated with this event.")) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/events/${id}`, { method: "DELETE" });
+        const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
         const data = await res.json();
         if (data.success) {
             alert("Event Deleted successfully");

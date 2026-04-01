@@ -97,8 +97,8 @@ form.addEventListener("submit", async (e) => {
   };
 
   const url = isOrganizer
-    ? "http://localhost:5000/api/organizer/signup"
-    : "http://localhost:5000/api/signup";
+    ? "/api/organizer/signup"
+    : "/api/signup";
 
   try {
     const res = await fetch(url, {
@@ -158,7 +158,7 @@ resendBtn.addEventListener("click", async () => {
     // Start cooldown UI immediately
     startResendCooldown();
 
-    const url = "http://localhost:5000/api/signup"; // Only users use OTP flow
+    const url = "/api/signup"; // Only users use OTP flow
 
     try {
         const res = await fetch(url, {
@@ -228,7 +228,7 @@ verifyBtn.addEventListener("click", async () => {
     verifyBtn.disabled = true;
 
     try {
-        const res = await fetch("http://localhost:5000/api/verify-otp", {
+        const res = await fetch("/api/verify-otp", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({

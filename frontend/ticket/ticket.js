@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const res = await fetch(`http://localhost:5000/api/bookings/${id}`);
+    const res = await fetch(`/api/bookings/${id}`);
     const data = await res.json();
 
     if (!data.success || !data.booking) {

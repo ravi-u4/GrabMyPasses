@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const courseInput = document.getElementById("course");
 
     try {
-        const res = await fetch(`http://localhost:5000/api/organizer/${organizer._id}`);
+        const res = await fetch(`/api/organizer/${organizer._id}`);
         const data = await res.json();
 
         if (data.success) {
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
 
         try {
-            const res = await fetch(`http://localhost:5000/api/organizer/${organizer._id}`, {
+            const res = await fetch(`/api/organizer/${organizer._id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -209,7 +209,7 @@ window.confirmDeleteAccount = async function() {
     if (!organizer || !organizer._id) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/organizer/${organizer._id}`, {
+        const res = await fetch(`/api/organizer/${organizer._id}`, {
             method: "DELETE"
         });
         const data = await res.json();
