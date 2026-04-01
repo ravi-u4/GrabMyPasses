@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
            rightBtn.addEventListener("click", () => scrollCarousel(340));
         }
         
-        fetch("http://localhost:5000/api/events").then(r=>r.json()).then(d => {
+        fetch("/api/events").then(r=>r.json()).then(d => {
             if(d.success && d.events) {
                homeGrid.innerHTML = "";
                
@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
            confirmDel.innerText = "Deleting...";
            confirmDel.disabled = true;
            try {
-             const res = await fetch("http://localhost:5000/api/profile", { 
+             const res = await fetch("/api/profile", { 
                  method: "DELETE", 
                  headers: {"Content-Type":"application/json"}, 
                  body: JSON.stringify({email: user.email}) 

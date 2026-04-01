@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- Fetch Details (BULLETPROOF) ---
     async function fetchEventDetails(id) {
         try {
-            const res = await fetch(`http://localhost:5000/api/events/${id}`);
+            const res = await fetch(`/api/events/${id}`);
             
             if (!res.ok) {
                 throw new Error(`Server returned ${res.status}`);
@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             try {
                 // Send request to your local backend
-                const response = await fetch('http://localhost:5000/api/events/generate-description', {
+                const response = await fetch('/api/events/generate-description', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt: prompt })
@@ -442,7 +442,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         formData.append('socialLinks', JSON.stringify(socialLinks));
 
         try {
-            const url = isEditMode ? `http://localhost:5000/api/events/${eventIdToEdit}` : "http://localhost:5000/api/events";
+            const url = isEditMode ? `/api/events/${eventIdToEdit}` : "/api/events";
             const res = await fetch(url, { method: isEditMode ? "PUT" : "POST", body: formData });
             const result = await res.json();
             
