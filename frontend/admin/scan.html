@@ -172,12 +172,17 @@
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/bookings/scan', {
+            // 1. Use relative path so it works locally and on Vercel
+            // 2. Point to /api/scan instead of /api/bookings/scan
+            const res = await fetch('/api/scan', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    // 3. Add the header your organizerAuth.js middleware expects
+                    'x-organizer-id': organizer._id 
+                },
                 body: JSON.stringify({ 
-                    bookingId: bookingId,
-                    organizerId: organizer._id 
+                    bookingId: bookingId
                 })
             });
             
@@ -198,7 +203,7 @@
             }
 
         } catch (err) {
-            console.error(err);
+            console.error("Fetch Error:", err);
             soundError.play();
             showResult('error', 'Connection Error', 'Could not reach server.', {});
         }
