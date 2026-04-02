@@ -4,32 +4,60 @@
   <meta charset="UTF-8">
   <title>Privacy Policy - GrabMyPasses</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="../../landing-page/styles.css">
+  <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="bg-[#0F0F1A] bg-transparent font-sans p-8 md:p-16">
+<body class="bg-[#0F0F1A] bg-transparent text-gray-300 font-sans p-8 md:p-16">
   <div class="fixed inset-0 w-full h-full overflow-hidden -z-50">
     <video autoplay muted loop playsinline class="w-full h-full object-cover ">
-      <source src="../assets/background.mp4" type="video/mp4">
+      <source src="/assets/background.mp4" type="video/mp4">
     </video>
     <div class="absolute inset-0 bg-black/70"></div> 
   </div>
-  <div class="max-w-3xl mx-auto">
+  
+  <div class="max-w-3xl mx-auto relative z-10">
     
-    <a id="back-link" href="../../landing-page/index.html" class="text-violet-400 hover:text-white mb-8 inline-block transition-colors font-medium">
+    <a id="back-link" href="/" class="text-violet-400 hover:text-white mb-8 inline-block transition-colors font-medium">
       &larr; Back to Home
     </a>
     
     <h1 class="text-3xl font-bold text-white mb-6">Privacy Policy</h1>
-    <p class="mb-4">Your privacy is important to us. It is GrabMyPasses' policy to respect your privacy regarding any information we may collect from you across our website.</p>
+    <p class="mb-4 leading-relaxed">Your privacy is critically important to us. It is GrabMyPasses' policy to respect your privacy regarding any information we may collect while operating our platform. This Privacy Policy applies to the GrabMyPasses website and services.</p>
     
     <h2 class="text-xl font-semibold text-white mt-8 mb-3">1. Information We Collect</h2>
-    <p class="mb-4">We collect information such as your name, email, college, and mobile number solely for the purpose of booking tickets and generating secure QR codes.</p>
+    <p class="mb-4 leading-relaxed">We collect information that you voluntarily provide to us when you register for an account, express an interest in obtaining information about us or our products, or when you participate in activities on the platform (such as booking event tickets or creating events).</p>
+    <ul class="list-disc pl-6 mb-4 space-y-2 text-gray-400">
+        <li><strong>Personal Information:</strong> Name, email address, mobile number, college name, and roll number.</li>
+        <li><strong>Event Data:</strong> Information regarding the events you book, create, or attend.</li>
+        <li><strong>Credentials:</strong> Passwords and security information used for authentication and account access.</li>
+    </ul>
 
     <h2 class="text-xl font-semibold text-white mt-8 mb-3">2. How We Use Your Data</h2>
-    <p class="mb-4">Your data is used to verify your identity at event venues. We do not share your personal information with third-party advertisers.</p>
+    <p class="mb-4 leading-relaxed">We use the personal information collected via our platform for a variety of business purposes described below:</p>
+    <ul class="list-disc pl-6 mb-4 space-y-2 text-gray-400">
+        <li><strong>To facilitate account creation and login processes.</strong></li>
+        <li><strong>To issue event passes:</strong> Generating secure QR codes and managing your bookings.</li>
+        <li><strong>To communicate with you:</strong> Sending booking confirmations, event updates, and administrative information.</li>
+        <li><strong>To protect our platform:</strong> As part of our efforts to keep our platform safe and secure (e.g., fraud monitoring and prevention).</li>
+    </ul>
 
-    <h2 class="text-xl font-semibold text-white mt-8 mb-3">3. Security</h2>
-    <p class="mb-4">We value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it.</p>
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">3. Sharing Your Information</h2>
+    <p class="mb-4 leading-relaxed">We do not sell, rent, or trade your personal information to third parties. We may share your information only in the following situations:</p>
+    <ul class="list-disc pl-6 mb-4 space-y-2 text-gray-400">
+        <li><strong>With Event Organizers:</strong> When you book a ticket for an event, we share your basic details (name, email, roll number) with the specific organizer of that event so they can manage attendance and verify your entry.</li>
+        <li><strong>Legal Obligations:</strong> If we are required to do so by law or in response to valid requests by public authorities.</li>
+    </ul>
+
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">4. Security of Your Information</h2>
+    <p class="mb-4 leading-relaxed">We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.</p>
+
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">5. Cookies and Tracking</h2>
+    <p class="mb-4 leading-relaxed">We use local storage (such as HTML5 Local Storage) and cookies strictly for functional purposes, such as keeping you logged in to your user or organizer account. We do not use third-party tracking cookies for advertising.</p>
+
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">6. Your Privacy Rights</h2>
+    <p class="mb-4 leading-relaxed">Depending on your location, you may have the right to access, correct, or delete the personal information we hold about you. You can review or change the information in your account by logging into your account settings.</p>
+
+    <h2 class="text-xl font-semibold text-white mt-8 mb-3">7. Contact Us</h2>
+    <p class="mb-4 leading-relaxed">If you have questions or comments about this Privacy Policy, you may contact us via the Contact page on our platform or email us directly at <strong>grabmypasses@gmail.com</strong>.</p>
     
     <div class="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-500">
       Last updated: December 2025
@@ -43,8 +71,8 @@
       const backLink = document.getElementById("back-link");
 
       if (organizer && backLink) {
-        // Redirect to Dashboard instead of Home
-        backLink.href = "../admin/dashboard.html"; 
+        // Redirect to Dashboard route instead of relative file
+        backLink.href = "/admin/dashboard"; 
         backLink.innerHTML = "&larr; Back to Dashboard";
       }
     });

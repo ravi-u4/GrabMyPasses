@@ -5,6 +5,10 @@ let currentTab = 'all';
 let currentPage = 1;
 const eventsPerPage = 9;
 
+// --- NEW VARIABLES TO HOLD MODAL DATA ---
+let currentEventBookings = [];
+let currentEventStats = {};
+
 document.addEventListener("DOMContentLoaded", () => {
     
     const organizer = JSON.parse(localStorage.getItem("organizer"));
@@ -337,57 +341,144 @@ window.openParticipantsModal = async function(eventId) {
     participantsModal.classList.remove("hidden");
     participantsModal.classList.add("flex");
 
+    // Hide tabs initially while loading
+    if(document.getElementById("participantTabs")) {
+        document.getElementById("participantTabs").classList.add("hidden");
+    }
+
     try {
         const res = await fetch(`/api/bookings/event/${eventId}`);
         const data = await res.json();
 
         if (data.success) {
+            currentEventBookings = data.bookings;
+            currentEventStats = data.eventStats;
+
             document.getElementById("modalTitle").innerText = data.eventStats.title;
-            document.getElementById("modalSubtitle").innerText = `${data.eventStats.count} Active Participants`;
             document.getElementById("modalRevenue").innerText = `₹${data.eventStats.revenue}`;
 
-            if (data.bookings.length === 0) {
-                list.innerHTML = `<p class="text-gray-500 text-center py-6 text-sm">No bookings yet.</p>`;
-            } else {
-                list.innerHTML = data.bookings.map((b, i) => {
-                    const paid = b.amountPaid !== undefined ? b.amountPaid : data.eventStats.price;
-                    const priceDisplay = paid > 0 ? `₹${paid}` : "Free";
-                    
-                    let statusBadge = '';
-                    let opacityClass = '';
-                    if (b.status === 'CHECKED_IN') statusBadge = 'bg-green-500/20 text-green-400';
-                    else if (b.status === 'CANCELLED') {
-                        statusBadge = 'bg-red-500/20 text-red-400';
-                        opacityClass = 'opacity-50 grayscale'; 
-                    }
-                    else statusBadge = 'bg-blue-500/20 text-blue-400'; 
-                    
-                    return `
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:border-violet-500/30 transition ${opacityClass}">
-                        <div class="flex items-center gap-3">
-                            <span class="text-gray-500 font-mono text-xs w-6 text-center">${i + 1}</span>
-                            <div>
-                                <p class="text-white font-medium text-sm ${b.status === 'CANCELLED' ? 'line-through text-gray-400' : ''}">${b.user?.name || "Unknown"}</p>
-                                <p class="text-xs text-gray-400">${b.user?.email || ""}</p>
-                            </div>
-                        </div>
-                        <div class="text-right flex flex-col items-end gap-1.5">
-                             <span class="text-[10px] font-bold px-2 py-0.5 rounded ${statusBadge}">
-                                ${b.status}
-                             </span>
-                             <span class="text-[10px] font-medium text-gray-400 bg-black/20 px-2 py-0.5 rounded border border-white/5 flex items-center gap-1">
-                                Paid: <strong class="${paid > 0 ? 'text-green-400' : 'text-gray-300'}">${priceDisplay}</strong>
-                             </span>
-                        </div>
-                    </div>
-                `}).join("");
+            // Show tabs once data loads
+            if(document.getElementById("participantTabs")) {
+                document.getElementById("participantTabs").classList.remove("hidden");
             }
+
+            // Trigger the "All" tab by default to render the list
+            filterParticipants('all');
         } else {
             list.innerHTML = `<p class="text-red-400 text-center text-sm">Failed to load data</p>`;
         }
     } catch (err) {
         list.innerHTML = `<p class="text-red-400 text-center text-sm">Server Error</p>`;
     }
+}
+
+// --- NEW FUNCTION TO HANDLE TAB CLICKS AND FILTERING ---
+window.filterParticipants = function(filterType) {
+    // 1. Update Tab Styles
+    ['all', 'scanned', 'pending'].forEach(tab => {
+        const btn = document.getElementById(`ptab-${tab}`);
+        if (btn) {
+            if (tab === filterType) {
+                btn.className = "text-white border-b-2 border-violet-500 pb-3 transition-all";
+            } else {
+                btn.className = "text-gray-400 hover:text-white border-b-2 border-transparent pb-3 transition-all";
+            }
+        }
+    });
+
+    const list = document.getElementById("participantsList");
+
+    // 2. Filter the Data
+    let filteredBookings = currentEventBookings;
+    
+    if (filterType === 'scanned') {
+        filteredBookings = currentEventBookings.filter(b => 
+            (b.status || "").toUpperCase() === 'CHECKED_IN' || 
+            (b.status || "").toUpperCase() === 'SCANNED'
+        );
+    } else if (filterType === 'pending') {
+        filteredBookings = currentEventBookings.filter(b => 
+            (b.status || "").toUpperCase() === 'CONFIRMED'
+        );
+    }
+
+    // 3. Count for tabs
+    const allCount = currentEventBookings.length;
+    const scannedCount = currentEventBookings.filter(b => (b.status || "").toUpperCase() === 'CHECKED_IN' || (b.status || "").toUpperCase() === 'SCANNED').length;
+    const pendingCount = currentEventBookings.filter(b => (b.status || "").toUpperCase() === 'CONFIRMED').length;
+
+    if (document.getElementById("count-all")) document.getElementById("count-all").innerText = allCount;
+    if (document.getElementById("count-scanned")) document.getElementById("count-scanned").innerText = scannedCount;
+    if (document.getElementById("count-pending")) document.getElementById("count-pending").innerText = pendingCount;
+
+    // Update Subtitle summary
+    document.getElementById("modalSubtitle").innerText = `${scannedCount} Scanned / ${pendingCount} Pending`;
+
+    // 4. Render the List
+    if (filteredBookings.length === 0) {
+        list.innerHTML = `<p class="text-gray-500 text-center py-6 text-sm">No tickets found for this category.</p>`;
+        return;
+    }
+
+    list.innerHTML = filteredBookings.map((b, i) => {
+        const paid = b.amountPaid !== undefined ? b.amountPaid : currentEventStats.price;
+        const priceDisplay = paid > 0 ? `₹${paid}` : "Free";
+        const statusUpper = (b.status || "").toUpperCase();
+
+        let statusBadge = '';
+        let opacityClass = '';
+        let timeInfo = '';
+        let displayStatus = statusUpper;
+
+        // Visual rules for Scanned vs Pending
+        if (statusUpper === 'CHECKED_IN' || statusUpper === 'SCANNED') {
+            displayStatus = 'SCANNED';
+            statusBadge = 'bg-emerald-500/20 text-emerald-400';
+            
+            // Format Scan Time
+            const dateObj = new Date(b.checkedInAt || b.scannedAt || b.updatedAt);
+            const timeStr = isNaN(dateObj) ? "Unknown Time" : dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true});
+            
+            timeInfo = `<div class="text-[10px] text-emerald-400 flex items-center gap-1 mt-1 font-medium">
+                            <i data-lucide="check-circle-2" class="w-3 h-3"></i> Scanned at ${timeStr}
+                        </div>`;
+        } 
+        else if (statusUpper === 'CANCELLED') {
+            statusBadge = 'bg-red-500/20 text-red-400';
+            opacityClass = 'opacity-50 grayscale';
+        } 
+        else {
+            // Pending (CONFIRMED)
+            displayStatus = 'PENDING';
+            statusBadge = 'bg-yellow-500/20 text-yellow-400';
+            timeInfo = `<div class="text-[10px] text-yellow-500/50 flex items-center gap-1 mt-1">
+                            <i data-lucide="circle-dashed" class="w-3 h-3"></i> Not Scanned Yet
+                        </div>`;
+        }
+
+        return `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:border-violet-500/30 transition ${opacityClass}">
+            <div class="flex items-center gap-3">
+                <span class="text-gray-500 font-mono text-xs w-6 text-center">${i + 1}</span>
+                <div>
+                    <p class="text-white font-medium text-sm ${statusUpper === 'CANCELLED' ? 'line-through text-gray-400' : ''}">${b.user?.name || "Unknown"}</p>
+                    <p class="text-xs text-gray-400">${b.user?.email || ""}</p>
+                    ${timeInfo}
+                </div>
+            </div>
+            <div class="text-right flex flex-col items-end gap-1.5">
+                 <span class="text-[10px] font-bold px-2 py-0.5 rounded tracking-wider ${statusBadge}">
+                    ${displayStatus}
+                 </span>
+                 <span class="text-[10px] font-medium text-gray-400 bg-black/20 px-2 py-0.5 rounded border border-white/5 flex items-center gap-1">
+                    Paid: <strong class="${paid > 0 ? 'text-green-400' : 'text-gray-300'}">${priceDisplay}</strong>
+                 </span>
+            </div>
+        </div>
+    `}).join("");
+    
+    // Re-initialize icons inside the dynamically injected HTML
+    lucide.createIcons();
 }
 
 window.deleteEvent = async function(id) {

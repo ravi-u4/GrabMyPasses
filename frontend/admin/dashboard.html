@@ -188,7 +188,15 @@
                  <p id="modalRevenue" class="text-xl font-bold text-green-400 font-mono">₹0</p>
             </div>
         </div>
+        
+        <div id="participantTabs" class="border-b border-white/5 bg-[#13131f] px-6 pt-3 flex gap-6 text-sm font-medium hidden">
+            <button onclick="filterParticipants('all')" id="ptab-all" class="text-white border-b-2 border-violet-500 pb-3 transition-all">All (<span id="count-all">0</span>)</button>
+            <button onclick="filterParticipants('scanned')" id="ptab-scanned" class="text-gray-400 hover:text-white border-b-2 border-transparent pb-3 transition-all">Scanned (<span id="count-scanned">0</span>)</button>
+            <button onclick="filterParticipants('pending')" id="ptab-pending" class="text-gray-400 hover:text-white border-b-2 border-transparent pb-3 transition-all">Pending (<span id="count-pending">0</span>)</button>
+        </div>
+
         <div id="participantsList" class="p-4 overflow-y-auto flex-1 space-y-2 custom-scroll"></div>
+        
         <div class="p-4 border-t border-white/5 bg-gray-900/50 text-center">
             <button onclick="document.getElementById('participantsModal').classList.add('hidden')" class="px-8 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-full text-sm font-medium transition cursor-pointer">Close</button>
         </div>

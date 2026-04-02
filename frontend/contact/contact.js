@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const footerLogo = document.getElementById("footer-logo");
       const backText = document.getElementById("nav-back-text");
 
-      const dashboardPath = "../admin/dashboard.html";
+      const dashboardPath = "/admin/dashboard";
 
       if (backLink) {
           backLink.href = dashboardPath;
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// 3. FORM LOGIC
+// 3. FORM LOGIC (Now connected to Backend!)
 const form = document.getElementById('contactForm');
 const emailInput = document.getElementById('email');
 const phoneInput = document.getElementById('phone');
@@ -73,7 +73,7 @@ if (phoneInput) {
 }
 
 if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -84,7 +84,7 @@ if (form) {
             isValid = false;
         } else {
             emailError.classList.add('hidden');
-            emailInput.style.borderColor = ''; // Reset to default
+            emailInput.style.borderColor = ''; 
         }
 
         if (phoneInput.value.length !== 10) {
@@ -105,20 +105,42 @@ if (form) {
             btn.disabled = true;
             lucide.createIcons();
 
-            setTimeout(() => {
-                showToast('Message sent successfully!', 'success');
-                form.reset();
+            try {
+                // Sending data to your new backend route!
+                const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('name').value,
+                        email: emailInput.value,
+                        phone: phoneInput.value,
+                        query: document.getElementById('query').value
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Message sent successfully!', 'success');
+                    form.reset();
+                } else {
+                    showToast(data.message || 'Failed to send message', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Connection error. Please try again.', 'error');
+            } finally {
                 span.innerHTML = originalContent;
                 btn.disabled = false;
                 lucide.createIcons();
-            }, 1500);
+            }
         } else {
             showToast('Please fix the errors above', 'error');
         }
     });
 }
 
-// 4. ADDED: SCROLL HIDE NAVBAR
+// 4. SCROLL HIDE NAVBAR
 let lastScrollY = window.scrollY;
 const header = document.getElementById('main-header');
 
@@ -126,7 +148,6 @@ if (header) {
     window.addEventListener('scroll', () => {
         const currentScrollY = window.scrollY;
         
-        // Hide if scrolling down and passed 50px
         if (currentScrollY > lastScrollY && currentScrollY > 50) {
             header.classList.add('header-hidden');
         } else {

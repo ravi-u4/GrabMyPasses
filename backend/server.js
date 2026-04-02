@@ -10,6 +10,7 @@ const eventRoutes = require("./routes/events");
 const bookingRoutes = require("./routes/bookings");
 const organizerRoutes = require("./routes/organizer");
 const scanRoutes = require("./routes/scan");
+const contactRoutes = require("./routes/contact");
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/organizer", organizerRoutes);
 app.use("/api/scan", scanRoutes);
+app.use("/api/contact", contactRoutes);
 
 // --------------------
 // Page Routes
