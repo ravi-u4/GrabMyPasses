@@ -19,12 +19,12 @@ router.post("/", async (req, res) => {
     const event = await Event.findById(eventId);
     if (!event) return res.json({ success: false, message: "Event not found" });
 
-    // ✅ CHECK IF BOOKINGS ARE PAUSED
+    // CHECK IF BOOKINGS ARE PAUSED
     if (event.isBookingPaused) {
         return res.json({ success: false, message: "Bookings for this event are currently paused by the organizer." });
     }
 
-    // ✅ CHECK FOR EXISTING BOOKINGS & CANCELLATIONS
+    //CHECK FOR EXISTING BOOKINGS & CANCELLATIONS
     const userBookings = await Booking.find({ user: user._id, event: event._id });
     const cancelCount = userBookings.filter(b => b.status === "CANCELLED").length;
     const activeBooking = userBookings.find(b => b.status === "CONFIRMED" || b.status === "CHECKED_IN");

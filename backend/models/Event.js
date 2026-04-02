@@ -21,7 +21,7 @@ const eventSchema = new mongoose.Schema({
   participationType: { type: String, enum: ['Solo', 'Team'], default: 'Solo' },
   teamSize: { type: Number, default: 1 }, 
   bookingStartTime: { type: Date, default: Date.now },
-  isBookingPaused: { type: Boolean, default: false }, // ✅ Pause State
+  isBookingPaused: { type: Boolean, default: false }, 
   contacts: [{ 
     name: String, 
     number: String 

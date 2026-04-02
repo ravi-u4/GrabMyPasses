@@ -24,15 +24,15 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "grabmypasses_events", // Folder name in your Cloudinary account
+    folder: "grabmypasses_events", // Folder name Cloudinary account
     allowed_formats: ["jpg", "png", "jpeg", "webp"], 
-    // transformation: [{ width: 800, height: 600, crop: "limit" }] // Optional: auto-resize
+    // transformation: [{ width: 800, height: 600, crop: "limit" }] // auto-resize
   },
 });
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // Increased to 2MB since cloud storage is robust
+  limits: { fileSize: 2 * 1024 * 1024 }, // Increased to 2MB 
 });
 
 // GET all events
@@ -161,7 +161,7 @@ router.put("/:id", upload.single("bannerImage"), async (req, res) => {
     }
 });
 
-// PATCH toggle pause status
+// toggle pause status
 router.patch("/:id/toggle-pause", async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);

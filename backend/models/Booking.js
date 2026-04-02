@@ -9,7 +9,7 @@ const bookingSchema = new mongoose.Schema({
   checkedInAt: { type: Date }, 
   qrCodeData: String,
   qrImage: String,
-  amountPaid: { type: Number, default: 0 } // ✅ Locks in the price at the time of booking
+  amountPaid: { type: Number, default: 0 } // Locks in the price at the time of booking
 });
 
 module.exports = mongoose.model("Booking", bookingSchema);

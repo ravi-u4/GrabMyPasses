@@ -42,7 +42,6 @@ router.post("/", organizerAuth, async (req, res) => {
     }
 
     // 3. Organizer Ownership Check
-    // Note: Checking both organizerId and organizer based on your schemas
     const eventOrganizerId = booking.event.organizerId || booking.event.organizer;
     if (String(eventOrganizerId) !== String(req.organizer._id)) {
       return res.status(403).json({

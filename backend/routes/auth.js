@@ -1,8 +1,10 @@
+/* backend/routes/auth.js */
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Booking = require("../models/Booking");
 const sendEmail = require("../utils/sendEmail");
+const bcrypt = require("bcrypt"); // ADDED BCRYPT
 
 /* =========================================================
    1. SIGNUP (Create account + Send OTP)
@@ -17,12 +19,13 @@ router.post("/signup", async (req, res) => {
 
     let user = await User.findOne({ email: data.email });
 
-    // If user exists and verified → block signup
     if (user && user.isVerified) {
       return res.json({ success: false, message: "Email already registered" });
     }
 
-    // If user exists but not verified → update details
+    // Hash the password securely
+    data.password = await bcrypt.hash(data.password, 10);
+
     if (user) {
       Object.assign(user, data);
     } else {
@@ -37,7 +40,6 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
 
-    // Send OTP Email
     await sendEmail(
       user.email,
       "Verify Your Account - GrabMyPasses",
@@ -117,7 +119,15 @@ router.post("/login", async (req, res) => {
       return res.json({ success: false, message: "Account not verified" });
     }
 
-    if (password !== user.password) {
+    // Compare Hash (with fallback for old plain-text test accounts)
+    let isMatch = false;
+    if (user.password.startsWith('$2b$')) {
+        isMatch = await bcrypt.compare(password, user.password);
+    } else {
+        isMatch = (password === user.password);
+    }
+
+    if (!isMatch) {
       return res.json({ success: false, message: "Wrong password" });
     }
 
@@ -145,7 +155,6 @@ router.get("/profile", async (req, res) => {
     if (!user) return res.json({ success: false, message: "User not found" });
 
     return res.json({ success: true, user });
-
   } catch (err) {
     console.log("PROFILE ERROR:", err);
     return res.json({ success: false, message: "Server Error" });
@@ -167,7 +176,6 @@ router.delete("/profile", async (req, res) => {
     await User.findByIdAndDelete(user._id);
 
     return res.json({ success: true, message: "Account deleted successfully" });
-
   } catch (err) {
     console.log("DELETE ERROR:", err);
     return res.json({ success: false, message: "Server Error" });

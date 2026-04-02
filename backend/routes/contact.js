@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET: Fetch all messages (You can use this later for your Admin Dashboard)
+// GET: Fetch all messages 
 router.get("/", async (req, res) => {
   try {
     const messages = await Contact.find().sort({ createdAt: -1 });

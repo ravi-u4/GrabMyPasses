@@ -1,7 +1,8 @@
-// backend/routes/organizer.js
+/* backend/routes/organizer.js */
 const express = require("express");
 const router = express.Router();
 const Organizer = require("../models/Organizer");
+const bcrypt = require("bcrypt"); // ADDED BCRYPT
 
 // ORGANIZER SIGNUP
 router.post("/signup", async (req, res) => {
@@ -15,6 +16,9 @@ router.post("/signup", async (req, res) => {
     if (exists) {
       return res.json({ success: false, message: "Organizer already exists" });
     }
+
+    // Hash the password securely
+    data.password = await bcrypt.hash(data.password, 10);
 
     const organizer = await Organizer.create(data);
     return res.json({
@@ -43,7 +47,15 @@ router.post("/login", async (req, res) => {
       return res.json({ success: false, message: "Organizer not found" });
     }
 
-    if (password !== organizer.password) {
+    // Compare Hash (with fallback for old plain-text test accounts)
+    let isMatch = false;
+    if (organizer.password.startsWith('$2b$')) {
+        isMatch = await bcrypt.compare(password, organizer.password);
+    } else {
+        isMatch = (password === organizer.password);
+    }
+
+    if (!isMatch) {
       return res.json({ success: false, message: "Wrong password" });
     }
 
@@ -80,15 +92,13 @@ router.get("/:id", async (req, res) => {
 // UPDATE ORGANIZER PROFILE
 router.put("/:id", async (req, res) => {
   try {
-    // Destructure all possible fields
     const { name, college, mobile, password, rollNo, gender, dob, course } = req.body;
     
-    // Create update object
     const updateData = { name, college, mobile, rollNo, gender, dob, course };
     
-    // Only update password if provided and not empty
+    // Only update and hash password if provided and not empty
     if (password && password.trim() !== "") {
-        updateData.password = password;
+        updateData.password = await bcrypt.hash(password, 10);
     }
 
     const organizer = await Organizer.findByIdAndUpdate(

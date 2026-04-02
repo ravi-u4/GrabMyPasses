@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Admin = require("../models/Admin");
 
-// (Optional) create first admin manually
+//create first admin manually
 router.post("/signup", async (req, res) => {
   try {
     const data = req.body;

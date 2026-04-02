@@ -7,7 +7,7 @@ const organizerSchema = new mongoose.Schema({
   email: String,
   password: String,
   
-  // --- ADD THESE LINES TO FETCH YOUR DATA ---
+  //FETCH DATA 
   rollNo: String,
   gender: String,
   dob: Date,
