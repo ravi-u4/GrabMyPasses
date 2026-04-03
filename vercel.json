@@ -31,6 +31,10 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/backend/server.js" },
     
+    { "source": "/styles.css", "destination": "/landing-page/styles.css" },
+    { "source": "/script.js", "destination": "/landing-page/script.js" },
+    { "source": "/utils.js", "destination": "/landing-page/utils.js" },
+    
     { "source": "/login", "destination": "/frontend/login/login.html" },
     { "source": "/signup", "destination": "/frontend/signup/signup.html" },
     { "source": "/events", "destination": "/frontend/events/events.html" },
