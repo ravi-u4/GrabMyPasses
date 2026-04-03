@@ -1,3 +1,4 @@
+/* frontend/signup/signup.js */
 const form = document.querySelector("form");
 const regBtn = document.getElementById("regBtn");
 const btnText = document.getElementById("btnText");
@@ -28,8 +29,18 @@ const verifyBtnText = document.getElementById("verifyBtnText");
 const verifyLoader = document.getElementById("verifyLoader");
 const resendBtn = document.getElementById("resendBtn");
 
+// --- SET UP 13+ AGE LIMIT FOR DOB CALENDAR ---
+const today = new Date();
+const maxYear = today.getFullYear() - 13;
+const maxDate = new Date(maxYear, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+dob.max = maxDate; // Prevent selecting dates newer than 13 years ago
+
+// --- SET UP PASSWORD LENGTH RULES ---
+password.minLength = 6;
+password.maxLength = 16;
+
 let isOrganizer = false;
-let signupData = {}; // Stores user data for resend
+let signupData = {}; 
 let resendTimer = null;
 const COOLDOWN_SECONDS = 30;
 
@@ -78,6 +89,12 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
+  if (password.value.length < 6 || password.value.length > 16) {
+    if(window.showToast) window.showToast("Password must be between 6 and 16 characters", "error");
+    else alert("Password must be between 6 and 16 characters");
+    return;
+  }
+
   btnText.style.display = "none";
   loader.style.display = "inline-block";
   regBtn.disabled = true;
@@ -96,9 +113,7 @@ form.addEventListener("submit", async (e) => {
     password: password.value
   };
 
-  const url = isOrganizer
-    ? "/api/organizer/signup"
-    : "/api/signup";
+  const url = isOrganizer ? "/api/organizer/signup" : "/api/signup";
 
   try {
     const res = await fetch(url, {
@@ -114,23 +129,16 @@ form.addEventListener("submit", async (e) => {
       checkIcon.style.display = "inline-block";
       
       if (isOrganizer) {
-        // Organizer flow (No OTP)
         successMsg.innerText = "✅ Registration Successful! Redirecting...";
         successMsg.classList.add("show");
         if(window.showToast) window.showToast("Registration successful!", "success");
         setTimeout(() => { window.location.href = "/admin/login.html"; }, 1600);
       } else {
-        // User flow (Show OTP)
         if(window.showToast) window.showToast("OTP sent to email. Please verify.", "success");
-        
         setTimeout(() => {
            signupSection.style.display = "none";
            otpSection.style.display = "block";
-           
-           // Start the cooldown immediately upon showing the section
            startResendCooldown();
-           
-           // Reset Main Form Buttons
            btnText.style.display = "inline-block";
            checkIcon.style.display = "none";
            regBtn.disabled = false;
@@ -155,11 +163,8 @@ form.addEventListener("submit", async (e) => {
 
 // --- STEP 2: RESEND OTP LOGIC ---
 resendBtn.addEventListener("click", async () => {
-    // Start cooldown UI immediately
     startResendCooldown();
-
-    const url = "/api/signup"; // Only users use OTP flow
-
+    const url = "/api/signup"; 
     try {
         const res = await fetch(url, {
             method: "POST",
@@ -217,7 +222,6 @@ verifyBtn.addEventListener("click", async () => {
     verifyBtnText.style.display = "none";
     verifyLoader.style.display = "inline-block";
     
-    // Inline styles for the loader
     verifyLoader.style.border = "3px solid transparent";
     verifyLoader.style.borderTop = "3px solid white";
     verifyLoader.style.borderRadius = "50%";
@@ -231,23 +235,17 @@ verifyBtn.addEventListener("click", async () => {
         const res = await fetch("/api/verify-otp", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                email: signupData.email,
-                otp: otpValue
-            })
+            body: JSON.stringify({ email: signupData.email, otp: otpValue })
         });
 
         const result = await res.json();
 
         if (result.success) {
             if(window.showToast) window.showToast("Verification Successful!", "success");
-            
             successMsg.innerText = "✅ Verification Successful! Redirecting...";
             successMsg.classList.add("show");
 
-            setTimeout(() => {
-                window.location.href = "../login/login.html";
-            }, 1600);
+            setTimeout(() => { window.location.href = "../login/login.html"; }, 1600);
         } else {
             if(window.showToast) window.showToast(result.message || "Invalid OTP", "error");
             verifyBtnText.style.display = "inline-block";

@@ -24,46 +24,123 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "grabmypasses_events", // Folder name Cloudinary account
+    folder: "grabmypasses_events", 
     allowed_formats: ["jpg", "png", "jpeg", "webp"], 
-    // transformation: [{ width: 800, height: 600, crop: "limit" }] // auto-resize
+    transformation: [{ width: 800, height: 600, crop: "limit" }] // Activated: Saves bandwidth and loads faster
   },
 });
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // Increased to 2MB 
+  limits: { fileSize: 2 * 1024 * 1024 }, // Max size 2MB 
 });
 
-// GET all events
-router.get("/", async (req, res) => {
+// ==========================================
+// Vercel Edge Caching Middleware
+// ==========================================
+const cacheMiddleware = (req, res, next) => {
+    // s-maxage=60: Cache at the Vercel edge for 60 seconds
+    res.setHeader(
+        'Cache-Control',
+        'public, s-maxage=60, stale-while-revalidate=120'
+    );
+    next();
+};
+
+// GET all events (CACHED, PAGINATED, LEAN, FILTERED)
+router.get("/", cacheMiddleware, async (req, res) => {
   try {
-    const events = await Event.find({}).sort({ date: 1 });
-    return res.json({ success: true, events });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+
+    // 1. Base query: Only show events happening today or in the future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let query = { date: { $gte: today } };
+
+    // 2. Category Filter
+    if (req.query.category && req.query.category !== 'All') {
+        query.category = req.query.category;
+    }
+
+    // 3. Search Filter (Matches title, college, or venue)
+    if (req.query.search) {
+        const searchRegex = new RegExp(req.query.search, 'i');
+        query.$or = [
+            { title: searchRegex },
+            { college: searchRegex },
+            { venue: searchRegex }
+        ];
+    }
+
+    // 4. Fetch paginated events
+    const events = await Event.find(query)
+        .sort({ date: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(); 
+
+    // 5. Count totals for pagination UI
+    const totalEvents = await Event.countDocuments(query);
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    // 6. Get all unique categories from upcoming events to build the frontend buttons
+    const distinctCategories = await Event.distinct("category", { date: { $gte: today } });
+
+    return res.json({ 
+        success: true, 
+        events,
+        categories: ['All', ...distinctCategories.filter(Boolean)],
+        pagination: {
+            currentPage: page,
+            totalPages: totalPages,
+            totalEvents: totalEvents,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.json({ success: false, message: "Server Error" });
+  }
+});
+
+// GET single event (CACHED, LEAN)
+router.get("/:id", cacheMiddleware, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+        .populate("organizer", "name email")
+        .lean(); 
+
+    if (!event) return res.json({ success: false, message: "Event not found" });
+    return res.json({ success: true, event });
   } catch (err) {
     return res.json({ success: false, message: "Server Error" });
   }
 });
 
-// GET Organizer's events (Dashboard)
+// GET Organizer's events (Dashboard) - (NOT CACHED, LEAN)
 router.get("/my-events", async (req, res) => {
   try {
     const { organizerId } = req.query;
     if (!organizerId) return res.json({ success: false, message: "Missing organizer ID" });
 
-    const events = await Event.find({ organizer: organizerId }).sort({ date: 1 });
+    const events = await Event.find({ organizer: organizerId })
+        .sort({ date: 1 })
+        .lean(); 
 
     let totalTickets = 0;
     let totalRevenue = 0;
 
     const eventsWithStats = await Promise.all(
       events.map(async (event) => {
-        const eventBookings = await Booking.find({ event: event._id });
+        const eventBookings = await Booking.find({ event: event._id }).lean();
         
         const activeBookings = eventBookings.filter(b => {
-    const status = (b.status || "").toUpperCase();
-    return status === "CONFIRMED" || status === "CHECKED_IN" || status === "SCANNED";
-});
+            const status = (b.status || "").toUpperCase();
+            return status === "CONFIRMED" || status === "CHECKED_IN" || status === "SCANNED";
+        });
         const ticketCount = activeBookings.length;
         
         const revenue = eventBookings.reduce((sum, b) => sum + (b.amountPaid !== undefined ? b.amountPaid : (event.price || 0)), 0);
@@ -71,25 +148,13 @@ router.get("/my-events", async (req, res) => {
         totalTickets += ticketCount;
         totalRevenue += revenue;
 
-        const eventObj = event.toObject();
-        eventObj.ticketsSold = ticketCount;
-        eventObj.eventRevenue = revenue;
-        return eventObj;
+        event.ticketsSold = ticketCount;
+        event.eventRevenue = revenue;
+        return event;
       })
     );
 
     return res.json({ success: true, events: eventsWithStats, stats: { totalEvents: events.length, totalTickets, totalRevenue } });
-  } catch (err) {
-    return res.json({ success: false, message: "Server Error" });
-  }
-});
-
-// GET single event
-router.get("/:id", async (req, res) => {
-  try {
-    const event = await Event.findById(req.params.id).populate("organizer", "name email");
-    if (!event) return res.json({ success: false, message: "Event not found" });
-    return res.json({ success: true, event });
   } catch (err) {
     return res.json({ success: false, message: "Server Error" });
   }
@@ -107,7 +172,6 @@ router.post("/", upload.single("bannerImage"), async (req, res) => {
     const eventData = {
       ...data,
       organizer: data.organizerId,
-      // req.file.path contains the secure Cloudinary URL
       bannerUrl: req.file ? req.file.path : (data.bannerUrl || ""),
       participationType: data.participationType || 'Solo',
       teamSize: data.participationType === 'Team' ? (data.teamSize || 1) : 1,
@@ -151,7 +215,6 @@ router.put("/:id", upload.single("bannerImage"), async (req, res) => {
         if (data.contacts) { try { event.contacts = JSON.parse(data.contacts); } catch (e) {} }
         if (data.socialLinks) { try { event.socialLinks = JSON.parse(data.socialLinks); } catch (e) {} }
         
-        // Update to new Cloudinary URL if a new file was uploaded
         if (req.file) event.bannerUrl = req.file.path;
 
         await event.save();
