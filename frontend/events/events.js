@@ -1,6 +1,17 @@
 /* frontend/events/events.js */
 
 document.addEventListener("DOMContentLoaded", () => {
+  
+  // ==========================================
+  // AUTH GUARD: Check if user is logged in
+  // ==========================================
+  const userData = localStorage.getItem("user");
+  if (!userData) {
+      // User is not logged in. Redirect to login page immediately.
+      window.location.href = "/login";
+      return; // Stop the rest of the script from loading events
+  }
+
   const container = document.getElementById("events-container");
   const filterContainer = document.getElementById("category-filters");
   const paginationContainer = document.getElementById("pagination-controls");
@@ -14,23 +25,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. Fetch Events from Backend API
   async function fetchEvents() {
     // Show Loading Skeletons
-    container.innerHTML = Array(6).fill(0).map(() => `
-      <div class="rounded-2xl bg-gray-900/60 border border-gray-800 overflow-hidden flex flex-col h-[340px]">
-        <div class="h-44 w-full skeleton animate-pulse bg-gray-800"></div>
-        <div class="p-5 flex-1 flex flex-col justify-between">
-          <div class="space-y-3">
-             <div class="flex justify-between">
-                <div class="h-4 w-20 bg-gray-800 rounded-full animate-pulse"></div>
-                <div class="h-4 w-24 bg-gray-800 rounded animate-pulse"></div>
-             </div>
-             <div class="h-6 w-3/4 bg-gray-800 rounded animate-pulse"></div>
-          </div>
-          <div class="mt-4 space-y-2">
-             <div class="h-4 w-1/2 bg-gray-800 rounded animate-pulse"></div>
+    if (container) {
+      container.innerHTML = Array(6).fill(0).map(() => `
+        <div class="rounded-2xl bg-gray-900/60 border border-gray-800 overflow-hidden flex flex-col h-[340px]">
+          <div class="h-44 w-full skeleton animate-pulse bg-gray-800"></div>
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <div class="space-y-3">
+               <div class="flex justify-between">
+                  <div class="h-4 w-20 bg-gray-800 rounded-full animate-pulse"></div>
+                  <div class="h-4 w-24 bg-gray-800 rounded animate-pulse"></div>
+               </div>
+               <div class="h-6 w-3/4 bg-gray-800 rounded animate-pulse"></div>
+            </div>
+            <div class="mt-4 space-y-2">
+               <div class="h-4 w-1/2 bg-gray-800 rounded animate-pulse"></div>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
+    }
 
     try {
       // Build API URL with parameters
@@ -49,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (!data.success) {
-        container.innerHTML = `<p class="text-gray-400 col-span-full text-center py-10">Failed to load events. Please try again.</p>`;
+        if (container) container.innerHTML = `<p class="text-gray-400 col-span-full text-center py-10">Failed to load events. Please try again.</p>`;
         return;
       }
 
@@ -64,12 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error(err);
-      container.innerHTML = `<p class="text-gray-400 col-span-full text-center py-10">Error loading events.</p>`;
+      if (container) container.innerHTML = `<p class="text-gray-400 col-span-full text-center py-10">Error loading events.</p>`;
     }
   }
 
   // 2. Render Events Card
   function renderEvents(list) {
+    if (!container) return;
+    
     if (!list || list.length === 0) {
       container.innerHTML = `<p class="text-gray-400 col-span-full text-center py-10">No events found matching your criteria.</p>`;
       return;
