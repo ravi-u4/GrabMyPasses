@@ -51,7 +51,7 @@ const cacheMiddleware = (req, res, next) => {
 router.get("/", cacheMiddleware, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 15;
+    const limit = parseInt(req.query.limit) || 9;
     const skip = (page - 1) * limit;
 
     // 1. Base query: Only show events happening today or in the future

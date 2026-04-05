@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = 'All';
   let searchQuery = '';
   let currentPage = 1;
-  const itemsPerPage = 15;
+  const itemsPerPage = 9;
   let searchTimeout; // For debouncing search requests
 
   // 1. Fetch Events from Backend API
