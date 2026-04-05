@@ -65,12 +65,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 currentTab = 'all';
                 window.switchTab(currentTab);
+            } else {
+                // 🔥 FIX: Handles the failure state so the dashboard doesn't keep loading forever
+                console.error("Dashboard failed to load stats:", data.message);
+                const grid = document.getElementById("admin-events");
+                if(grid) {
+                    grid.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center justify-center border border-red-500/20 bg-red-500/5 rounded-[24px]">
+                        <i data-lucide="alert-circle" class="w-10 h-10 text-red-400 mb-3"></i>
+                        <p class="text-red-400 text-center font-medium">${data.message || 'Failed to load events.'}</p>
+                    </div>`;
+                    lucide.createIcons();
+                }
             }
         } catch (err) {
             console.error("Error loading dashboard:", err);
             const grid = document.getElementById("admin-events");
-            if(grid) grid.innerHTML = `<p class="text-red-400 col-span-full text-center py-10 flex flex-col items-center justify-center gap-2"><i data-lucide="alert-triangle" class="w-6 h-6"></i> Failed to load events. Server might be down.</p>`;
-            lucide.createIcons();
+            if(grid) {
+                grid.innerHTML = `<p class="text-red-400 col-span-full text-center py-10 flex flex-col items-center justify-center gap-2"><i data-lucide="alert-triangle" class="w-6 h-6"></i> Failed to load events. Server might be down.</p>`;
+                lucide.createIcons();
+            }
         }
     }
 

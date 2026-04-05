@@ -106,20 +106,9 @@ router.get("/", cacheMiddleware, async (req, res) => {
   }
 });
 
-// GET single event (CACHED, LEAN)
-router.get("/:id", cacheMiddleware, async (req, res) => {
-  try {
-    const event = await Event.findById(req.params.id)
-        .populate("organizer", "name email")
-        .lean(); 
-
-    if (!event) return res.json({ success: false, message: "Event not found" });
-    return res.json({ success: true, event });
-  } catch (err) {
-    return res.json({ success: false, message: "Server Error" });
-  }
-});
-
+// ===============================================================
+//  PREVENT ROUTE SHADOWING
+// ===============================================================
 // GET Organizer's events (Dashboard) - (NOT CACHED, LEAN)
 router.get("/my-events", async (req, res) => {
   try {
@@ -155,6 +144,21 @@ router.get("/my-events", async (req, res) => {
     );
 
     return res.json({ success: true, events: eventsWithStats, stats: { totalEvents: events.length, totalTickets, totalRevenue } });
+  } catch (err) {
+    console.error("My Events Error:", err);
+    return res.json({ success: false, message: "Server Error fetching your events" });
+  }
+});
+
+// GET single event (CACHED, LEAN)
+router.get("/:id", cacheMiddleware, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+        .populate("organizer", "name email")
+        .lean(); 
+
+    if (!event) return res.json({ success: false, message: "Event not found" });
+    return res.json({ success: true, event });
   } catch (err) {
     return res.json({ success: false, message: "Server Error" });
   }
