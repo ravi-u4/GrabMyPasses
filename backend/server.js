@@ -42,6 +42,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/organizer", organizerRoutes);
 app.use("/api/scan", scanRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/superadmin", require("./routes/superadmin"));
 
 // --------------------
 // 404 Fallback for APIs

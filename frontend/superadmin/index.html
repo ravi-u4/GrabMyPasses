@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>God Mode - GrabMyPasses</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --primary: #8b5cf6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #ffffff;
+      --text-muted: #9ca3af;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* GLASSMORPHISM UTILS */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+    }
+
+    /* LOGIN SECTION */
+    #login-section {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .login-card {
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .login-card h2 { margin-bottom: 1.5rem; color: var(--primary); }
+    input {
+      width: 100%; padding: 12px; margin-bottom: 1rem;
+      border-radius: 8px; border: 1px solid var(--glass-border);
+      background: rgba(0,0,0,0.5); color: white; outline: none;
+    }
+    button {
+      width: 100%; padding: 12px; border-radius: 8px; border: none;
+      background: var(--primary); color: white; font-weight: bold;
+      cursor: pointer; transition: 0.2s;
+    }
+    button:hover { opacity: 0.9; }
+
+    /* DASHBOARD SECTION */
+    #dashboard-section { display: none; height: 100vh; display: flex; }
+    
+    .sidebar {
+      width: 250px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+      border-right: 1px solid var(--glass-border);
+    }
+    .sidebar h2 { color: var(--primary); margin-bottom: 1rem; }
+    .nav-btn {
+      background: transparent; color: var(--text-muted); text-align: left;
+      padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px;
+    }
+    .nav-btn.active { background: var(--glass-bg); color: var(--text); }
+    .nav-btn:hover { background: var(--glass-bg); }
+    .logout-btn { margin-top: auto; background: var(--danger); }
+
+    .main-content {
+      flex: 1; padding: 2rem; overflow-y: auto;
+    }
+    
+    /* TABLES */
+    .data-table {
+      width: 100%; border-collapse: collapse; margin-top: 1rem;
+    }
+    .data-table th, .data-table td {
+      padding: 12px; text-align: left; border-bottom: 1px solid var(--glass-border);
+    }
+    .data-table th { color: var(--primary); }
+    .data-table tr:hover { background: rgba(255,255,255,0.02); }
+    
+    .action-btn { width: auto; padding: 6px 12px; font-size: 0.85rem; margin-right: 5px; }
+    .btn-danger { background: var(--danger); }
+    .btn-success { background: var(--success); }
+    .btn-warn { background: #f59e0b; }
+
+    /* TOAST */
+    #toast {
+      position: fixed; top: 20px; right: 20px; padding: 1rem; border-radius: 8px;
+      transform: translateX(150%); transition: 0.3s; z-index: 1000;
+    }
+    #toast.show { transform: translateX(0); }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="glass"></div>
+
+  <div id="login-section">
+    <div class="glass login-card">
+      <h2><i data-lucide="shield-alert"></i> God Mode</h2>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="Super Admin Email" required>
+        <input type="password" id="password" placeholder="Absolute Power Password" required>
+        <button type="submit">Access Control Panel</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="dashboard-section" style="display: none;">
+    <div class="sidebar glass">
+      <h2>God Mode</h2>
+      <button class="nav-btn active" onclick="switchTab('users')"><i data-lucide="users"></i> Users</button>
+      <button class="nav-btn" onclick="switchTab('organizers')"><i data-lucide="building"></i> Organizers</button>
+      <button class="nav-btn" onclick="switchTab('events')"><i data-lucide="calendar"></i> Events</button>
+      <button class="nav-btn" onclick="switchTab('bookings')"><i data-lucide="ticket"></i> Bookings</button>
+      <button class="nav-btn" onclick="switchTab('messages')"><i data-lucide="mail"></i> Messages</button>
+      <button class="nav-btn logout-btn" onclick="logout()"><i data-lucide="log-out"></i> Relinquish Power</button>
+    </div>
+
+    <div class="main-content">
+      <h1 id="view-title">Overview</h1>
+      <div class="glass" style="padding: 1rem; margin-top: 1rem; overflow-x: auto;">
+        <table class="data-table">
+          <thead id="table-head"></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const token = localStorage.getItem("god_token");
+    let globalData = {};
+
+    if (token) {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("dashboard-section").style.display = "flex";
+      fetchData();
+    }
+
+    function showToast(msg, color = "var(--primary)") {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.borderLeft = `4px solid ${color}`;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    // LOGIN
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("/api/superadmin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("god_token", data.token);
+        window.location.reload();
+      } else {
+        showToast(data.message, "var(--danger)");
+      }
+    });
+
+    // LOGOUT
+    function logout() {
+      localStorage.removeItem("god_token");
+      window.location.reload();
+    }
+
+    // FETCH DATA
+    async function fetchData() {
+      const res = await fetch("/api/superadmin/all-data", {
+        headers: { "Authorization": localStorage.getItem("god_token") }
+      });
+      const data = await res.json();
+      if (data.success) {
+        globalData = data.data;
+        switchTab('users'); // Default view
+      } else {
+        logout(); // Token invalid
+      }
+    }
+
+    // TABS RENDERING LOGIC
+    function switchTab(tab) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget?.classList.add('active');
+
+      document.getElementById("view-title").innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+      
+      const thead = document.getElementById("table-head");
+      const tbody = document.getElementById("table-body");
+      thead.innerHTML = ""; tbody.innerHTML = "";
+
+      if (tab === "users" || tab === "organizers") {
+        thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>College</th><th>Verified</th><th>Actions</th></tr>`;
+        globalData[tab].forEach(item => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${item.name}</td><td>${item.email}</td><td>${item.college || 'N/A'}</td>
+              <td>${item.isVerified ? '✅' : '❌'}</td>
+              <td><button class="action-btn btn-danger" onclick="deleteEntity('${tab === 'users' ? 'user' : 'organizer'}', '${item._id}')">Delete</button></td>
+            </tr>`;
+        });
+      }
+
+      if (tab === "events") {
+        thead.innerHTML = `<tr><th>Title</th><th>Organizer</th><th>Date</th><th>Price</th><th>Actions</th></tr>`;
+        globalData.events.forEach(item => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${item.title}</td><td>${item.organizer?.name || 'Unknown'}</td>
+              <td>${new Date(item.date).toLocaleDateString()}</td><td>₹${item.price}</td>
+              <td><button class="action-btn btn-danger" onclick="deleteEntity('event', '${item._id}')">Delete</button></td>
+            </tr>`;
+        });
+      }
+
+      if (tab === "bookings") {
+        thead.innerHTML = `<tr><th>ID</th><th>User</th><th>Event</th><th>Status</th><th>Actions</th></tr>`;
+        globalData.bookings.forEach(item => {
+          tbody.innerHTML += `
+            <tr>
+              <td style="font-size: 0.8rem; color: var(--text-muted);">${item.bookingId || item._id}</td>
+              <td>${item.user?.name || 'Unknown'}</td><td>${item.event?.title || 'Deleted Event'}</td>
+              <td>${item.scanned ? '✅ Scanned' : '❌ Unscanned'}</td>
+              <td>
+                <button class="action-btn ${item.scanned ? 'btn-warn' : 'btn-success'}" onclick="toggleScan('${item._id}')">
+                  ${item.scanned ? 'Undo Scan' : 'Mark Scanned'}
+                </button>
+                <button class="action-btn btn-danger" onclick="deleteEntity('booking', '${item._id}')">Delete</button>
+              </td>
+            </tr>`;
+        });
+      }
+
+      if (tab === "messages") {
+        thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Actions</th></tr>`;
+        globalData.messages.forEach(item => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${item.name}</td><td>${item.email}</td><td>${item.subject}</td>
+              <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.message}">${item.message}</td>
+              <td><button class="action-btn btn-danger" onclick="deleteEntity('message', '${item._id}')">Delete</button></td>
+            </tr>`;
+        });
+      }
+    }
+
+    // API ACTIONS
+    async function toggleScan(id) {
+      if(!confirm("Are you sure you want to alter this ticket's scan status?")) return;
+      const res = await fetch(`/api/superadmin/toggle-scan/${id}`, {
+        method: "PUT",
+        headers: { "Authorization": localStorage.getItem("god_token") }
+      });
+      const data = await res.json();
+      showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
+      if(data.success) fetchData(); // Refresh data
+    }
+
+    async function deleteEntity(type, id) {
+      if(!confirm(`WARNING: Are you sure you want to permanently delete this ${type}? This cannot be undone.`)) return;
+      const res = await fetch(`/api/superadmin/delete/${type}/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": localStorage.getItem("god_token") }
+      });
+      const data = await res.json();
+      showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
+      if(data.success) fetchData(); // Refresh data
+    }
+  </script>
+</body>
+</html>
