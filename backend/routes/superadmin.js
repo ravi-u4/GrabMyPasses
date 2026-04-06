@@ -108,4 +108,29 @@ router.delete("/delete/:type/:id", verifyGodMode, async (req, res) => {
   }
 });
 
+// 7. TOGGLE VERIFICATION STATUS (God Power to bypass OTP)
+router.put("/toggle-verify/:type/:id", verifyGodMode, async (req, res) => {
+  try {
+    const { type, id } = req.params;
+    let account;
+
+    if (type === "user") account = await User.findById(id);
+    else if (type === "organizer") account = await Organizer.findById(id);
+    else return res.json({ success: false, message: "Invalid account type" });
+
+    if (!account) return res.json({ success: false, message: "Account not found" });
+
+    account.isVerified = !account.isVerified; // Flip the status (true to false, false to true)
+    await account.save();
+
+    return res.json({ 
+        success: true, 
+        message: `${type.toUpperCase()} marked as ${account.isVerified ? 'Verified' : 'Unverified'}` 
+    });
+  } catch (err) {
+    console.log("SUPER ADMIN VERIFY ERROR:", err);
+    return res.json({ success: false, message: "Update failed." });
+  }
+});
+
 module.exports = router;

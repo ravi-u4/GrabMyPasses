@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>God Mode - GrabMyPasses</title>
-  <link rel="icon" type="image/png" href="../assets/only-logo.png">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
@@ -240,14 +239,21 @@
       const tbody = document.getElementById("table-body");
       thead.innerHTML = ""; tbody.innerHTML = "";
 
+      // UPDATE: Force-Verify features and accurate DB status check applied here
       if (tab === "users" || tab === "organizers") {
         thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>Mobile</th><th>Status</th><th>Actions</th></tr>`;
         globalData[tab].forEach(item => {
+          let isVerified = item.isVerified === true; 
+          
+          let verifyAction = isVerified ? "Revoke" : "Verify";
+          let verifyClass = isVerified ? "btn-warn" : "btn-success";
+
           tbody.innerHTML += `<tr>
               <td>${item.name || 'N/A'}</td><td>${item.email}</td><td>${item.mobile || 'N/A'}</td>
-              <td><span class="status-pill ${item.isVerified || tab === 'organizers' ? 'status-checked' : 'status-cancelled'}">${item.isVerified || tab === 'organizers' ? 'Verified' : 'Unverified'}</span></td>
+              <td><span class="status-pill ${isVerified ? 'status-checked' : 'status-cancelled'}">${isVerified ? 'Verified' : 'Unverified'}</span></td>
               <td>
                 <button class="action-btn btn-info" onclick='openModal("info", ${JSON.stringify(item)})'><i data-lucide="eye"></i> View</button>
+                <button class="action-btn ${verifyClass}" onclick="toggleVerify('${tab.slice(0,-1)}', '${item._id}')"><i data-lucide="shield"></i> ${verifyAction}</button>
                 <button class="action-btn btn-danger" onclick="deleteEntity('${tab.slice(0,-1)}', '${item._id}')"><i data-lucide="trash"></i> Delete</button>
               </td>
             </tr>`;
@@ -404,6 +410,18 @@
       const data = await res.json();
       showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
       if(data.success) fetchData();
+    }
+
+    // UPDATE: New function to toggle Verification state directly
+    async function toggleVerify(type, id) {
+      if(!confirm(`Are you sure you want to force change the verification status of this ${type}?`)) return;
+      const res = await fetch(`/api/superadmin/toggle-verify/${type}/${id}`, {
+        method: "PUT",
+        headers: { "Authorization": localStorage.getItem("god_token") }
+      });
+      const data = await res.json();
+      showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
+      if(data.success) fetchData(); // Refreshes the table instantly
     }
 
     // EXPORT DATA TO CSV (God Power)
