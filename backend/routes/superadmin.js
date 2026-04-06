@@ -7,7 +7,7 @@ const Event = require("../models/Event");
 const Booking = require("../models/Booking");
 const Contact = require("../models/Contact");
 
-// Security Middleware: Protects God routes from unauthorized API calls
+// Security Middleware
 const verifyGodMode = (req, res, next) => {
   const token = req.headers['authorization'];
   if (token === process.env.SUPER_ADMIN_PASSWORD) {
@@ -20,48 +20,77 @@ const verifyGodMode = (req, res, next) => {
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (email === process.env.SUPER_ADMIN_EMAIL && password === process.env.SUPER_ADMIN_PASSWORD) {
-    // We send back the password to use as a secure token for future requests
     return res.json({ success: true, token: password });
   }
   return res.json({ success: false, message: "Access Denied." });
 });
 
-// 2. FETCH EVERYTHING (Optimized for Vercel using .lean() to save memory)
+// 2. FETCH EVERYTHING
 router.get("/all-data", verifyGodMode, async (req, res) => {
   try {
     const users = await User.find().select("-password").sort({ createdAt: -1 }).lean();
     const organizers = await Organizer.find().select("-password").sort({ createdAt: -1 }).lean();
-    const events = await Event.find().populate("organizer", "name email").sort({ createdAt: -1 }).lean();
+    const events = await Event.find().populate("organizer", "name email mobile").sort({ createdAt: -1 }).lean();
     const bookings = await Booking.find()
-      .populate("user", "name email")
-      .populate("event", "title date")
+      .populate("user", "name email mobile college")
+      .populate("event", "title date price")
       .sort({ createdAt: -1 }).lean();
     const messages = await Contact.find().sort({ createdAt: -1 }).lean();
 
-    return res.json({ success: true, data: { users, organizers, events, bookings, messages } });
+    // Calculate absolute stats
+    const totalRevenue = bookings.reduce((sum, b) => sum + (b.amountPaid || 0), 0);
+
+    return res.json({ 
+        success: true, 
+        data: { users, organizers, events, bookings, messages, stats: { totalRevenue } } 
+    });
   } catch (err) {
     console.log("SUPER ADMIN FETCH ERROR:", err);
     return res.json({ success: false, message: "Failed to fetch data." });
   }
 });
 
-// 3. TOGGLE TICKET SCAN STATUS (Absolute Power)
-router.put("/toggle-scan/:id", verifyGodMode, async (req, res) => {
+// 3. TOGGLE BOOKING STATUS (CONFIRMED <-> CHECKED_IN <-> CANCELLED)
+router.put("/booking-status/:id", verifyGodMode, async (req, res) => {
   try {
+    const { status } = req.body; // Pass the desired status
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.json({ success: false, message: "Booking not found" });
     
-    booking.scanned = !booking.scanned; // Flip the status
+    booking.status = status;
+    if (status === "CHECKED_IN") booking.checkedInAt = new Date();
     await booking.save();
     
-    return res.json({ success: true, message: `Ticket marked as ${booking.scanned ? 'Scanned' : 'Unscanned'}` });
+    return res.json({ success: true, message: `Booking updated to ${status}` });
   } catch (err) {
-    console.log("SUPER ADMIN SCAN ERROR:", err);
     return res.json({ success: false, message: "Update failed." });
   }
 });
 
-// 4. UNIVERSAL DELETE
+// 4. EDIT EVENT DETAILS
+router.put("/edit-event/:id", verifyGodMode, async (req, res) => {
+    try {
+      const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!event) return res.json({ success: false, message: "Event not found" });
+      return res.json({ success: true, message: "Event updated successfully", event });
+    } catch (err) {
+      return res.json({ success: false, message: "Event update failed." });
+    }
+});
+
+// 5. UPDATE CONTACT STATUS (Mark as Read)
+router.put("/contact-status/:id", verifyGodMode, async (req, res) => {
+    try {
+        const msg = await Contact.findById(req.params.id);
+        msg.status = msg.status === "Unread" ? "Read" : "Unread";
+        await msg.save();
+        return res.json({ success: true, message: `Message marked as ${msg.status}` });
+    } catch (err) {
+        return res.json({ success: false, message: "Status update failed." });
+    }
+});
+
+// 6. UNIVERSAL DELETE
 router.delete("/delete/:type/:id", verifyGodMode, async (req, res) => {
   try {
     const { type, id } = req.params;
@@ -75,7 +104,6 @@ router.delete("/delete/:type/:id", verifyGodMode, async (req, res) => {
 
     return res.json({ success: true, message: `${type} deleted permanently.` });
   } catch (err) {
-    console.log("SUPER ADMIN DELETE ERROR:", err);
     return res.json({ success: false, message: "Deletion failed." });
   }
 });

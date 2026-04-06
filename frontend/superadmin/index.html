@@ -7,132 +7,153 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      --bg: #0a0a0a;
-      --glass-bg: rgba(255, 255, 255, 0.05);
-      --glass-border: rgba(255, 255, 255, 0.1);
+      --bg: #030014;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
       --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.5);
       --danger: #ef4444;
       --success: #10b981;
-      --text: #ffffff;
-      --text-muted: #9ca3af;
+      --warn: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
     }
     
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
     
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
+    body { background-color: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+
+    /* Background aesthetic */
+    .bg-glow {
+      position: absolute; width: 600px; height: 600px; background: var(--primary);
+      filter: blur(150px); opacity: 0.15; border-radius: 50%; top: -100px; left: -100px; z-index: -1;
     }
 
-    /* GLASSMORPHISM UTILS */
     .glass {
-      background: var(--glass-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
+      background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); border-radius: 16px;
     }
 
-    /* LOGIN SECTION */
-    #login-section {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    /* LOGIN */
+    #login-section { height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .login-card { padding: 3rem 2rem; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 40px var(--primary-glow); }
+    .login-card h2 { margin-bottom: 2rem; color: #fff; font-size: 2rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    input, select {
+      width: 100%; padding: 14px; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--glass-border);
+      background: rgba(0,0,0,0.4); color: white; outline: none; transition: 0.3s;
     }
-    .login-card {
-      padding: 2rem;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .login-card h2 { margin-bottom: 1.5rem; color: var(--primary); }
-    input {
-      width: 100%; padding: 12px; margin-bottom: 1rem;
-      border-radius: 8px; border: 1px solid var(--glass-border);
-      background: rgba(0,0,0,0.5); color: white; outline: none;
-    }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
     button {
-      width: 100%; padding: 12px; border-radius: 8px; border: none;
-      background: var(--primary); color: white; font-weight: bold;
-      cursor: pointer; transition: 0.2s;
+      width: 100%; padding: 14px; border-radius: 8px; border: none; background: var(--primary);
+      color: white; font-weight: 600; cursor: pointer; transition: 0.2s;
     }
-    button:hover { opacity: 0.9; }
+    button:hover { background: #7c3aed; box-shadow: 0 0 20px var(--primary-glow); }
 
-    /* DASHBOARD SECTION */
-    #dashboard-section { display: none; height: 100vh; display: flex; }
-    
-    .sidebar {
-      width: 250px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
-      border-right: 1px solid var(--glass-border);
-    }
-    .sidebar h2 { color: var(--primary); margin-bottom: 1rem; }
-    .nav-btn {
-      background: transparent; color: var(--text-muted); text-align: left;
-      padding: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px;
-    }
-    .nav-btn.active { background: var(--glass-bg); color: var(--text); }
-    .nav-btn:hover { background: var(--glass-bg); }
-    .logout-btn { margin-top: auto; background: var(--danger); }
+    /* DASHBOARD */
+    #dashboard-section { display: none; height: 100vh; }
+    .sidebar { width: 260px; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; border-right: 1px solid var(--glass-border); }
+    .sidebar h2 { color: #fff; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; }
+    .nav-btn { background: transparent; color: var(--text-muted); text-align: left; padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 12px; font-weight: 500; }
+    .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 0 15px var(--primary-glow); }
+    .nav-btn:hover:not(.active) { background: rgba(255,255,255,0.05); color: #fff; }
+    .logout-btn { margin-top: auto; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .logout-btn:hover { background: var(--danger); color: #fff; }
 
-    .main-content {
-      flex: 1; padding: 2rem; overflow-y: auto;
-    }
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
     
+    /* STATS ROW */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+    .stat-card { padding: 1.5rem; text-align: center; }
+    .stat-card h3 { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; }
+    .stat-card p { font-size: 2rem; font-weight: bold; color: #fff; }
+
+    /* TOP BAR */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; }
+    .top-bar h1 { font-size: 1.8rem; font-weight: 600; }
+    .export-btn { width: auto; background: #2563eb; display: flex; align-items: center; gap: 8px; }
+
     /* TABLES */
-    .data-table {
-      width: 100%; border-collapse: collapse; margin-top: 1rem;
-    }
-    .data-table th, .data-table td {
-      padding: 12px; text-align: left; border-bottom: 1px solid var(--glass-border);
-    }
-    .data-table th { color: var(--primary); }
+    .table-container { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; overflow: auto; flex: 1; }
+    .data-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+    .data-table th, .data-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+    .data-table th { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; background: rgba(0,0,0,0.2); }
     .data-table tr:hover { background: rgba(255,255,255,0.02); }
     
-    .action-btn { width: auto; padding: 6px 12px; font-size: 0.85rem; margin-right: 5px; }
-    .btn-danger { background: var(--danger); }
-    .btn-success { background: var(--success); }
-    .btn-warn { background: #f59e0b; }
+    /* BUTTONS & PILLS */
+    .action-btn { width: auto; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; margin-right: 5px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+    .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
+    .btn-success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); }
+    .btn-warn { background: rgba(245, 158, 11, 0.1); color: var(--warn); border: 1px solid var(--warn); }
+    .btn-info { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid #3b82f6; }
+    
+    .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+    .status-confirmed { background: rgba(139, 92, 246, 0.2); color: var(--primary); }
+    .status-checked { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .status-cancelled { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-    /* TOAST */
-    #toast {
-      position: fixed; top: 20px; right: 20px; padding: 1rem; border-radius: 8px;
-      transform: translateX(150%); transition: 0.3s; z-index: 1000;
-    }
-    #toast.show { transform: translateX(0); }
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 50; }
+    .modal { width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; }
+    .modal-close { position: absolute; top: 15px; right: 15px; background: transparent; color: #fff; width: auto; padding: 5px; }
+    
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    .detail-item { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); }
+    .detail-item span { display: block; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 4px; }
+    .detail-item strong { color: #fff; font-size: 0.95rem; word-break: break-all; }
+
+    #toast { position: fixed; bottom: 30px; right: 30px; padding: 1rem 1.5rem; border-radius: 8px; transform: translateY(150%); transition: 0.3s; z-index: 1000; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    #toast.show { transform: translateY(0); }
   </style>
 </head>
 <body>
 
+  <div class="bg-glow"></div>
   <div id="toast" class="glass"></div>
+
+  <div class="modal-overlay" id="god-modal">
+    <div class="modal glass">
+      <button class="modal-close" onclick="closeModal()"><i data-lucide="x"></i></button>
+      <h2 id="modal-title" style="color: var(--primary); border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">Details</h2>
+      <div id="modal-content"></div>
+    </div>
+  </div>
 
   <div id="login-section">
     <div class="glass login-card">
-      <h2><i data-lucide="shield-alert"></i> God Mode</h2>
+      <h2><i data-lucide="zap"></i> GOD MODE</h2>
       <form id="login-form">
         <input type="email" id="email" placeholder="Super Admin Email" required>
         <input type="password" id="password" placeholder="Absolute Power Password" required>
-        <button type="submit">Access Control Panel</button>
+        <button type="submit">Initialize Override</button>
       </form>
     </div>
   </div>
 
-  <div id="dashboard-section" style="display: none;">
-    <div class="sidebar glass">
-      <h2>God Mode</h2>
+  <div id="dashboard-section">
+    <div class="sidebar glass" style="border-radius: 0; border-top: none; border-bottom: none; border-left: none;">
+      <h2>Control Panel</h2>
       <button class="nav-btn active" onclick="switchTab('users')"><i data-lucide="users"></i> Users</button>
       <button class="nav-btn" onclick="switchTab('organizers')"><i data-lucide="building"></i> Organizers</button>
       <button class="nav-btn" onclick="switchTab('events')"><i data-lucide="calendar"></i> Events</button>
       <button class="nav-btn" onclick="switchTab('bookings')"><i data-lucide="ticket"></i> Bookings</button>
-      <button class="nav-btn" onclick="switchTab('messages')"><i data-lucide="mail"></i> Messages</button>
-      <button class="nav-btn logout-btn" onclick="logout()"><i data-lucide="log-out"></i> Relinquish Power</button>
+      <button class="nav-btn" onclick="switchTab('messages')"><i data-lucide="mail"></i> Support Inquiries</button>
+      <button class="nav-btn logout-btn" onclick="logout()"><i data-lucide="power"></i> Disconnect</button>
     </div>
 
     <div class="main-content">
-      <h1 id="view-title">Overview</h1>
-      <div class="glass" style="padding: 1rem; margin-top: 1rem; overflow-x: auto;">
+      <div class="stats-grid">
+        <div class="glass stat-card"><h3>Total Users</h3><p id="stat-users">0</p></div>
+        <div class="glass stat-card"><h3>Active Events</h3><p id="stat-events">0</p></div>
+        <div class="glass stat-card"><h3>Total Bookings</h3><p id="stat-bookings">0</p></div>
+        <div class="glass stat-card"><h3>Platform Revenue</h3><p id="stat-revenue" style="color: var(--success);">₹0</p></div>
+      </div>
+
+      <div class="top-bar">
+        <h1 id="view-title">Users</h1>
+        <button class="export-btn" onclick="exportCSV()"><i data-lucide="download"></i> Export Data</button>
+      </div>
+
+      <div class="table-container">
         <table class="data-table">
           <thead id="table-head"></thead>
           <tbody id="table-body"></tbody>
@@ -142,12 +163,14 @@
   </div>
 
   <script>
+    let globalData = {};
+    let currentTab = 'users';
+
+    // Init Icons
     lucide.createIcons();
 
-    const token = localStorage.getItem("god_token");
-    let globalData = {};
-
-    if (token) {
+    // Check Login State
+    if (localStorage.getItem("god_token")) {
       document.getElementById("login-section").style.display = "none";
       document.getElementById("dashboard-section").style.display = "flex";
       fetchData();
@@ -161,134 +184,246 @@
       setTimeout(() => toast.classList.remove("show"), 3000);
     }
 
-    // LOGIN
+    // LOGIN LOGIC
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
       const res = await fetch("/api/superadmin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ 
+            email: document.getElementById("email").value, 
+            password: document.getElementById("password").value 
+        })
       });
       const data = await res.json();
-
       if (data.success) {
         localStorage.setItem("god_token", data.token);
         window.location.reload();
-      } else {
-        showToast(data.message, "var(--danger)");
-      }
+      } else showToast(data.message, "var(--danger)");
     });
 
-    // LOGOUT
     function logout() {
       localStorage.removeItem("god_token");
       window.location.reload();
     }
 
-    // FETCH DATA
+    // FETCH CORE DATA
     async function fetchData() {
       const res = await fetch("/api/superadmin/all-data", {
         headers: { "Authorization": localStorage.getItem("god_token") }
       });
-      const data = await res.json();
-      if (data.success) {
-        globalData = data.data;
-        switchTab('users'); // Default view
+      const resData = await res.json();
+      if (resData.success) {
+        globalData = resData.data;
+        
+        // Update Stats
+        document.getElementById("stat-users").innerText = globalData.users.length;
+        document.getElementById("stat-events").innerText = globalData.events.length;
+        document.getElementById("stat-bookings").innerText = globalData.bookings.length;
+        document.getElementById("stat-revenue").innerText = `₹${globalData.stats.totalRevenue}`;
+        
+        switchTab(currentTab);
       } else {
-        logout(); // Token invalid
+        logout();
       }
     }
 
-    // TABS RENDERING LOGIC
+    // UI RENDERING
     function switchTab(tab) {
+      currentTab = tab;
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      event.currentTarget?.classList.add('active');
+      event?.currentTarget?.classList.add('active');
 
       document.getElementById("view-title").innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
-      
       const thead = document.getElementById("table-head");
       const tbody = document.getElementById("table-body");
       thead.innerHTML = ""; tbody.innerHTML = "";
 
       if (tab === "users" || tab === "organizers") {
-        thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>College</th><th>Verified</th><th>Actions</th></tr>`;
+        thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>Mobile</th><th>Status</th><th>Actions</th></tr>`;
         globalData[tab].forEach(item => {
-          tbody.innerHTML += `
-            <tr>
-              <td>${item.name}</td><td>${item.email}</td><td>${item.college || 'N/A'}</td>
-              <td>${item.isVerified ? '✅' : '❌'}</td>
-              <td><button class="action-btn btn-danger" onclick="deleteEntity('${tab === 'users' ? 'user' : 'organizer'}', '${item._id}')">Delete</button></td>
+          tbody.innerHTML += `<tr>
+              <td>${item.name || 'N/A'}</td><td>${item.email}</td><td>${item.mobile || 'N/A'}</td>
+              <td><span class="status-pill ${item.isVerified || tab === 'organizers' ? 'status-checked' : 'status-cancelled'}">${item.isVerified || tab === 'organizers' ? 'Verified' : 'Unverified'}</span></td>
+              <td>
+                <button class="action-btn btn-info" onclick='openModal("info", ${JSON.stringify(item)})'><i data-lucide="eye"></i> View</button>
+                <button class="action-btn btn-danger" onclick="deleteEntity('${tab.slice(0,-1)}', '${item._id}')"><i data-lucide="trash"></i> Delete</button>
+              </td>
             </tr>`;
         });
       }
 
       if (tab === "events") {
-        thead.innerHTML = `<tr><th>Title</th><th>Organizer</th><th>Date</th><th>Price</th><th>Actions</th></tr>`;
+        thead.innerHTML = `<tr><th>Title</th><th>Organizer</th><th>Date</th><th>Status</th><th>Actions</th></tr>`;
         globalData.events.forEach(item => {
-          tbody.innerHTML += `
-            <tr>
+          tbody.innerHTML += `<tr>
               <td>${item.title}</td><td>${item.organizer?.name || 'Unknown'}</td>
-              <td>${new Date(item.date).toLocaleDateString()}</td><td>₹${item.price}</td>
-              <td><button class="action-btn btn-danger" onclick="deleteEntity('event', '${item._id}')">Delete</button></td>
+              <td>${new Date(item.date).toLocaleDateString()}</td>
+              <td><span class="status-pill ${item.isBookingPaused ? 'status-cancelled' : 'status-checked'}">${item.isBookingPaused ? 'Paused' : 'Active'}</span></td>
+              <td>
+                <button class="action-btn btn-warn" onclick='openModal("edit-event", ${JSON.stringify(item)})'><i data-lucide="edit"></i> Edit</button>
+                <button class="action-btn btn-danger" onclick="deleteEntity('event', '${item._id}')"><i data-lucide="trash"></i></button>
+              </td>
             </tr>`;
         });
       }
 
       if (tab === "bookings") {
-        thead.innerHTML = `<tr><th>ID</th><th>User</th><th>Event</th><th>Status</th><th>Actions</th></tr>`;
+        thead.innerHTML = `<tr><th>User</th><th>Event</th><th>Amount</th><th>Status</th><th>Actions</th></tr>`;
         globalData.bookings.forEach(item => {
-          tbody.innerHTML += `
-            <tr>
-              <td style="font-size: 0.8rem; color: var(--text-muted);">${item.bookingId || item._id}</td>
-              <td>${item.user?.name || 'Unknown'}</td><td>${item.event?.title || 'Deleted Event'}</td>
-              <td>${item.scanned ? '✅ Scanned' : '❌ Unscanned'}</td>
+          let statusClass = item.status === 'CONFIRMED' ? 'status-confirmed' : item.status === 'CHECKED_IN' ? 'status-checked' : 'status-cancelled';
+          tbody.innerHTML += `<tr>
+              <td>${item.user?.name || item.user?.email || 'Unknown'}</td>
+              <td>${item.event?.title || 'Deleted'}</td>
+              <td>₹${item.amountPaid || 0}</td>
+              <td><span class="status-pill ${statusClass}">${item.status}</span></td>
               <td>
-                <button class="action-btn ${item.scanned ? 'btn-warn' : 'btn-success'}" onclick="toggleScan('${item._id}')">
-                  ${item.scanned ? 'Undo Scan' : 'Mark Scanned'}
-                </button>
-                <button class="action-btn btn-danger" onclick="deleteEntity('booking', '${item._id}')">Delete</button>
+                <button class="action-btn btn-info" onclick="updateBooking('${item._id}', 'CHECKED_IN')">Mark In</button>
+                <button class="action-btn btn-warn" onclick="updateBooking('${item._id}', 'CANCELLED')">Cancel</button>
+                <button class="action-btn btn-danger" onclick="deleteEntity('booking', '${item._id}')"><i data-lucide="trash"></i></button>
               </td>
             </tr>`;
         });
       }
 
       if (tab === "messages") {
-        thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Actions</th></tr>`;
+        thead.innerHTML = `<tr><th>Name</th><th>Email</th><th>Phone</th><th>Message</th><th>Status</th><th>Actions</th></tr>`;
         globalData.messages.forEach(item => {
-          tbody.innerHTML += `
-            <tr>
-              <td>${item.name}</td><td>${item.email}</td><td>${item.subject}</td>
-              <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.message}">${item.message}</td>
-              <td><button class="action-btn btn-danger" onclick="deleteEntity('message', '${item._id}')">Delete</button></td>
+          tbody.innerHTML += `<tr>
+              <td>${item.name}</td><td>${item.email}</td><td>${item.phone}</td>
+              <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">${item.query}</td>
+              <td><span class="status-pill ${item.status === 'Read' ? 'status-checked' : 'status-cancelled'}">${item.status}</span></td>
+              <td>
+                <button class="action-btn btn-info" onclick='openModal("message", ${JSON.stringify(item)})'><i data-lucide="eye"></i></button>
+                <button class="action-btn btn-success" onclick="toggleContact('${item._id}')"><i data-lucide="check"></i> Resolve</button>
+                <button class="action-btn btn-danger" onclick="deleteEntity('message', '${item._id}')"><i data-lucide="trash"></i></button>
+              </td>
             </tr>`;
         });
       }
+      lucide.createIcons();
     }
 
+    // MODAL LOGIC (Absolute Detail Viewing & Editing)
+    function openModal(type, data) {
+      const modal = document.getElementById("god-modal");
+      const title = document.getElementById("modal-title");
+      const content = document.getElementById("modal-content");
+      
+      modal.style.display = "flex";
+
+      if (type === "info") {
+        title.innerText = "Personal & Academic Details";
+        content.innerHTML = `<div class="detail-grid">
+            ${Object.keys(data).filter(k => k !== 'password' && k !== '__v').map(key => `
+                <div class="detail-item"><span>${key}</span><strong>${typeof data[key] === 'object' && data[key] !== null ? JSON.stringify(data[key]) : data[key] || 'N/A'}</strong></div>
+            `).join('')}
+        </div>`;
+      } 
+      
+      else if (type === "message") {
+        title.innerText = "Full Message Log";
+        content.innerHTML = `
+          <div style="margin-top:1rem;">
+            <p style="color: var(--text-muted); margin-bottom: 10px;">From: <b>${data.name}</b> (${data.email}) | ${data.phone}</p>
+            <div class="glass" style="padding: 1.5rem; white-space: pre-wrap;">${data.query}</div>
+          </div>`;
+      }
+
+      else if (type === "edit-event") {
+        title.innerText = `Editing: ${data.title}`;
+        content.innerHTML = `
+          <form onsubmit="submitEventEdit(event, '${data._id}')" style="margin-top: 1rem;">
+            <label>Title</label>
+            <input type="text" id="ev-title" value="${data.title}">
+            <label>Price (₹)</label>
+            <input type="number" id="ev-price" value="${data.price}">
+            <label>Max Capacity</label>
+            <input type="number" id="ev-cap" value="${data.maxCapacity}">
+            <label>Booking Status</label>
+            <select id="ev-pause">
+              <option value="false" ${!data.isBookingPaused ? 'selected' : ''}>Active (Accepting Bookings)</option>
+              <option value="true" ${data.isBookingPaused ? 'selected' : ''}>Paused (Closed)</option>
+            </select>
+            <button type="submit" style="margin-top: 1rem;"><i data-lucide="save"></i> Save Override</button>
+          </form>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function closeModal() { document.getElementById("god-modal").style.display = "none"; }
+
     // API ACTIONS
-    async function toggleScan(id) {
-      if(!confirm("Are you sure you want to alter this ticket's scan status?")) return;
-      const res = await fetch(`/api/superadmin/toggle-scan/${id}`, {
+    async function submitEventEdit(e, id) {
+        e.preventDefault();
+        const payload = {
+            title: document.getElementById("ev-title").value,
+            price: document.getElementById("ev-price").value,
+            maxCapacity: document.getElementById("ev-cap").value,
+            isBookingPaused: document.getElementById("ev-pause").value === "true"
+        };
+        const res = await fetch(`/api/superadmin/edit-event/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("god_token") },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
+        closeModal(); fetchData();
+    }
+
+    async function updateBooking(id, status) {
+      if(!confirm(`Change status to ${status}?`)) return;
+      const res = await fetch(`/api/superadmin/booking-status/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": localStorage.getItem("god_token") },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
+      if(data.success) fetchData();
+    }
+
+    async function toggleContact(id) {
+      const res = await fetch(`/api/superadmin/contact-status/${id}`, {
         method: "PUT",
         headers: { "Authorization": localStorage.getItem("god_token") }
       });
       const data = await res.json();
       showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
-      if(data.success) fetchData(); // Refresh data
+      if(data.success) fetchData();
     }
 
     async function deleteEntity(type, id) {
-      if(!confirm(`WARNING: Are you sure you want to permanently delete this ${type}? This cannot be undone.`)) return;
+      if(!confirm(`WARNING: Erase this ${type} from the database permanently?`)) return;
       const res = await fetch(`/api/superadmin/delete/${type}/${id}`, {
-        method: "DELETE",
-        headers: { "Authorization": localStorage.getItem("god_token") }
+        method: "DELETE", headers: { "Authorization": localStorage.getItem("god_token") }
       });
       const data = await res.json();
       showToast(data.message, data.success ? "var(--success)" : "var(--danger)");
-      if(data.success) fetchData(); // Refresh data
+      if(data.success) fetchData();
+    }
+
+    // EXPORT DATA TO CSV (God Power)
+    function exportCSV() {
+      if (!globalData[currentTab] || globalData[currentTab].length === 0) {
+        return showToast("No data to export", "var(--warn)");
+      }
+      const items = globalData[currentTab];
+      const replacer = (key, value) => value === null ? '' : typeof value === 'object' ? JSON.stringify(value) : value;
+      const header = Object.keys(items[0]).filter(k => k !== '__v' && k !== 'password');
+      const csv = [
+        header.join(','),
+        ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+      ].join('\r\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `${currentTab}_export.csv`);
+      a.click();
     }
   </script>
 </body>
