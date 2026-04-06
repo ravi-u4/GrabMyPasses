@@ -4,7 +4,7 @@ const organizerSchema = new mongoose.Schema({
   name: String,
   college: String,
   mobile: String,
-  email: String,
+  email: { type: String, unique: true },
   password: String,
   
   //FETCH DATA 
@@ -13,6 +13,10 @@ const organizerSchema = new mongoose.Schema({
   dob: Date,
   course: String,
   // ------------------------------------------
+  // NEW FIELDS FOR OTP
+  isVerified: { type: Boolean, default: false },
+  otp: String,
+  otpExpires: Date,
   
   createdAt: { type: Date, default: Date.now }
 });
