@@ -128,22 +128,18 @@ form.addEventListener("submit", async (e) => {
       loader.style.display = "none";
       checkIcon.style.display = "inline-block";
       
-      if (isOrganizer) {
-        successMsg.innerText = "✅ Registration Successful! Redirecting...";
-        successMsg.classList.add("show");
-        if(window.showToast) window.showToast("Registration successful!", "success");
-        setTimeout(() => { window.location.href = "/admin/login.html"; }, 1600);
-      } else {
-        if(window.showToast) window.showToast("OTP sent to email. Please verify.", "success");
-        setTimeout(() => {
-           signupSection.style.display = "none";
-           otpSection.style.display = "block";
-           startResendCooldown();
-           btnText.style.display = "inline-block";
-           checkIcon.style.display = "none";
-           regBtn.disabled = false;
-        }, 1000);
-      }
+      if(window.showToast) window.showToast("OTP sent to email. Please verify.", "success");
+      
+      // Changed: Show OTP Section for BOTH User and Organizer
+      setTimeout(() => {
+         signupSection.style.display = "none";
+         otpSection.style.display = "block";
+         startResendCooldown();
+         btnText.style.display = "inline-block";
+         checkIcon.style.display = "none";
+         regBtn.disabled = false;
+      }, 1000);
+      
     } else {
       if(window.showToast) window.showToast(result.message, "error");
       else alert(result.message);
@@ -164,7 +160,8 @@ form.addEventListener("submit", async (e) => {
 // --- STEP 2: RESEND OTP LOGIC ---
 resendBtn.addEventListener("click", async () => {
     startResendCooldown();
-    const url = "/api/signup"; 
+    // Changed: Set dynamic URL based on role
+    const url = isOrganizer ? "/api/organizer/signup" : "/api/signup"; 
     try {
         const res = await fetch(url, {
             method: "POST",
@@ -231,8 +228,11 @@ verifyBtn.addEventListener("click", async () => {
     
     verifyBtn.disabled = true;
 
+    // Changed: Point to different verify endpoints based on role
+    const verifyUrl = isOrganizer ? "/api/organizer/verify-otp" : "/api/verify-otp";
+
     try {
-        const res = await fetch("/api/verify-otp", {
+        const res = await fetch(verifyUrl, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ email: signupData.email, otp: otpValue })
@@ -245,7 +245,14 @@ verifyBtn.addEventListener("click", async () => {
             successMsg.innerText = "✅ Verification Successful! Redirecting...";
             successMsg.classList.add("show");
 
-            setTimeout(() => { window.location.href = "../login/login.html"; }, 1600);
+            // Changed: Redirect to the proper login page based on role
+            setTimeout(() => { 
+                if(isOrganizer) {
+                    window.location.href = "/admin/login.html";
+                } else {
+                    window.location.href = "../login/login.html"; 
+                }
+            }, 1600);
         } else {
             if(window.showToast) window.showToast(result.message || "Invalid OTP", "error");
             verifyBtnText.style.display = "inline-block";
