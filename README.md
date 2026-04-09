@@ -109,4 +109,4 @@ grabmypasses/
 ## 👨‍💻 Author
 
 **Ravi**
-GrabMyPasses - Digital College Fest Management System
+**GrabMyPasses - Digital College Fest Management System**
