@@ -1,6 +1,12 @@
 # 🎫 GrabMyPasses
 
-**GrabMyPasses** is a full-stack digital event management and secure ticketing ecosystem designed for college fests and university events. It replaces manual, error-prone ticketing workflows with a secure, digital-first system that handles everything from registration to real-time on-ground check-ins.
+> A full-stack digital event management and secure ticketing ecosystem for college fests and university events.
+
+![Node.js](https://img.shields.io/badge/Backend-Node.js-green)
+![Express](https://img.shields.io/badge/Framework-Express.js-black)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![Vercel](https://img.shields.io/badge/Deployment-Vercel-black)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
 ---
 
@@ -11,6 +17,8 @@
 ---
 
 ## 🚀 Overview
+
+**GrabMyPasses** is a full-stack digital event management and secure ticketing ecosystem designed for college fests and university events. It replaces manual, error-prone ticketing workflows with a secure, digital-first system that handles everything from registration to real-time on-ground check-ins.
 
 The platform provides end-to-end functionality to ensure a seamless experience for both attendees and organizers. It is optimized for high-traffic college environments and utilizes serverless architecture for scalability.
 
@@ -81,7 +89,7 @@ grabmypasses/
 │   └── server.js      # Main entry point
 ├── frontend/
 │   ├── admin/         # Organizer dashboard & scanner
-│   ├── superadmin/    # God Mode interface
+│   ├── superadmin/    # Admin interface
 │   ├── signup/        # Authentication logic
 │   └── landing-page/  # Homepage
 └── vercel.json        # Deployment configuration
